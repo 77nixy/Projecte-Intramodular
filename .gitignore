@@ -1,0 +1,13 @@
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Backups locals (no van al repo)
+*.bak
+*.tmp
