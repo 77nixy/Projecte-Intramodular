@@ -4,420 +4,420 @@
    Cosmos edition: cold starlight on void black
 ═══════════════════════════════════════════════════════════════ */
 
-'use strict';
+'use strict'; // Instrucción
 
 /* ══════════════════════════════════════════════════════════════
    SECTION 1 — GALAXY CANVAS (performance-optimised)
    Pre-rendered fog · simple star dots · shooting stars · mouse dust
 ══════════════════════════════════════════════════════════════ */
 
-(function initGalaxy() {
-  const canvas = document.getElementById('starfield');
-  if (!canvas) return;
+(function initGalaxy() { // Instrucción
+  const canvas = document.getElementById('starfield'); // Declara una variable
+  if (!canvas) return; // Condición
 
-  const ctx = canvas.getContext('2d');
-  let CW = canvas.width  = window.innerWidth;
-  let CH = canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d'); // Declara una variable
+  let CW = canvas.width  = window.innerWidth; // Declara una variable
+  let CH = canvas.height = window.innerHeight; // Declara una variable
 
   /* ── Offscreen canvas for the static galaxy fog — drawn ONCE ── */
-  let fogCanvas = document.createElement('canvas');
-  let fogCtx    = fogCanvas.getContext('2d');
+  let fogCanvas = document.createElement('canvas'); // Declara una variable
+  let fogCtx    = fogCanvas.getContext('2d'); // Declara una variable
 
-  function buildFog() {
-    fogCanvas.width  = CW;
-    fogCanvas.height = CH;
-    fogCtx.clearRect(0, 0, CW, CH);
+  function buildFog() { // Función
+    fogCanvas.width  = CW; // Asigna un valor
+    fogCanvas.height = CH; // Asigna un valor
+    fogCtx.clearRect(0, 0, CW, CH); // Llama a una función
 
     /* Milky-way diagonal band — bright and visible */
-    const band = fogCtx.createLinearGradient(0, CH * 0.1, CW, CH * 0.9);
-    band.addColorStop(0,    'rgba(255,255,255,0)');
-    band.addColorStop(0.30, 'rgba(255,255,255,0.10)');
-    band.addColorStop(0.5,  'rgba(255,255,255,0.22)');
-    band.addColorStop(0.70, 'rgba(255,255,255,0.10)');
-    band.addColorStop(1,    'rgba(255,255,255,0)');
-    fogCtx.fillStyle = band;
-    fogCtx.fillRect(0, 0, CW, CH);
+    const band = fogCtx.createLinearGradient(0, CH * 0.1, CW, CH * 0.9); // Declara una variable
+    band.addColorStop(0,    'rgba(255,255,255,0)'); // Llama a una función
+    band.addColorStop(0.30, 'rgba(255,255,255,0.10)'); // Llama a una función
+    band.addColorStop(0.5,  'rgba(255,255,255,0.22)'); // Llama a una función
+    band.addColorStop(0.70, 'rgba(255,255,255,0.10)'); // Llama a una función
+    band.addColorStop(1,    'rgba(255,255,255,0)'); // Llama a una función
+    fogCtx.fillStyle = band; // Asigna un valor
+    fogCtx.fillRect(0, 0, CW, CH); // Llama a una función
 
     /* Second narrower band for depth */
-    const band2 = fogCtx.createLinearGradient(CW * 0.1, 0, CW * 0.9, CH);
-    band2.addColorStop(0,   'rgba(255,255,255,0)');
-    band2.addColorStop(0.4, 'rgba(255,255,255,0.06)');
-    band2.addColorStop(0.6, 'rgba(255,255,255,0.06)');
-    band2.addColorStop(1,   'rgba(255,255,255,0)');
-    fogCtx.fillStyle = band2;
-    fogCtx.fillRect(0, 0, CW, CH);
+    const band2 = fogCtx.createLinearGradient(CW * 0.1, 0, CW * 0.9, CH); // Declara una variable
+    band2.addColorStop(0,   'rgba(255,255,255,0)'); // Llama a una función
+    band2.addColorStop(0.4, 'rgba(255,255,255,0.06)'); // Llama a una función
+    band2.addColorStop(0.6, 'rgba(255,255,255,0.06)'); // Llama a una función
+    band2.addColorStop(1,   'rgba(255,255,255,0)'); // Llama a una función
+    fogCtx.fillStyle = band2; // Asigna un valor
+    fogCtx.fillRect(0, 0, CW, CH); // Llama a una función
 
     /* Nebula clusters — radial gradients drawn once */
-    const clusters = [
-      { x: 0.20, y: 0.32, r: 0.30, a: 0.26 },
-      { x: 0.55, y: 0.50, r: 0.36, a: 0.30 },
-      { x: 0.80, y: 0.68, r: 0.26, a: 0.22 },
-      { x: 0.07, y: 0.72, r: 0.20, a: 0.18 },
-      { x: 0.88, y: 0.18, r: 0.18, a: 0.18 },
-      { x: 0.42, y: 0.18, r: 0.24, a: 0.16 },
-      { x: 0.68, y: 0.82, r: 0.28, a: 0.20 },
-      { x: 0.33, y: 0.60, r: 0.18, a: 0.14 },
-    ];
-    for (const c of clusters) {
-      const cx = c.x * CW, cy = c.y * CH, r = c.r * Math.min(CW, CH);
-      const g = fogCtx.createRadialGradient(cx, cy, 0, cx, cy, r);
-      g.addColorStop(0,   `rgba(255,255,255,${c.a})`);
-      g.addColorStop(0.5, `rgba(255,255,255,${c.a * 0.3})`);
-      g.addColorStop(1,   'rgba(0,0,0,0)');
-      fogCtx.beginPath();
-      fogCtx.arc(cx, cy, r, 0, Math.PI * 2);
-      fogCtx.fillStyle = g;
-      fogCtx.fill();
+    const clusters = [ // Declara una variable
+      { x: 0.20, y: 0.32, r: 0.30, a: 0.26 }, // Instrucción
+      { x: 0.55, y: 0.50, r: 0.36, a: 0.30 }, // Instrucción
+      { x: 0.80, y: 0.68, r: 0.26, a: 0.22 }, // Instrucción
+      { x: 0.07, y: 0.72, r: 0.20, a: 0.18 }, // Instrucción
+      { x: 0.88, y: 0.18, r: 0.18, a: 0.18 }, // Instrucción
+      { x: 0.42, y: 0.18, r: 0.24, a: 0.16 }, // Instrucción
+      { x: 0.68, y: 0.82, r: 0.28, a: 0.20 }, // Instrucción
+      { x: 0.33, y: 0.60, r: 0.18, a: 0.14 }, // Instrucción
+    ]; // Instrucción
+    for (const c of clusters) { // Bucle
+      const cx = c.x * CW, cy = c.y * CH, r = c.r * Math.min(CW, CH); // Declara una variable
+      const g = fogCtx.createRadialGradient(cx, cy, 0, cx, cy, r); // Declara una variable
+      g.addColorStop(0,   `rgba(255,255,255,${c.a})`); // Llama a una función
+      g.addColorStop(0.5, `rgba(255,255,255,${c.a * 0.3})`); // Llama a una función
+      g.addColorStop(1,   'rgba(0,0,0,0)'); // Llama a una función
+      fogCtx.beginPath(); // Llama a una función
+      fogCtx.arc(cx, cy, r, 0, Math.PI * 2); // Llama a una función
+      fogCtx.fillStyle = g; // Asigna un valor
+      fogCtx.fill(); // Llama a una función
     }
   }
 
   /* ── Stars ── */
-  let stars = [];
+  let stars = []; // Declara una variable
 
-  function buildStars() {
-    stars = [];
+  function buildStars() { // Función
+    stars = []; // Asigna un valor
     /* Fewer stars = faster. 1200px for a typical 1920×1080 = ~3700 stars */
-    const total = Math.min(Math.floor((CW * CH) / 2400), 1800);
-    for (let i = 0; i < total; i++) {
+    const total = Math.min(Math.floor((CW * CH) / 2400), 1800); // Declara una variable
+    for (let i = 0; i < total; i++) { // Bucle
       /* 40 % placed in the diagonal band */
-      const inBand = Math.random() < 0.40;
-      let x, y;
-      if (inBand) {
-        const t = Math.random();
-        x = t * CW;
-        y = CH * 0.15 + t * CH * 0.70 + (Math.random() - 0.5) * CH * 0.30;
-        y = Math.max(0, Math.min(CH, y));
-      } else {
-        x = Math.random() * CW;
-        y = Math.random() * CH;
+      const inBand = Math.random() < 0.40; // Declara una variable
+      let x, y; // Declara una variable
+      if (inBand) { // Condición
+        const t = Math.random(); // Declara una variable
+        x = t * CW; // Asigna un valor
+        y = CH * 0.15 + t * CH * 0.70 + (Math.random() - 0.5) * CH * 0.30; // Asigna un valor
+        y = Math.max(0, Math.min(CH, y)); // Asigna un valor
+      } else { // Instrucción
+        x = Math.random() * CW; // Asigna un valor
+        y = Math.random() * CH; // Asigna un valor
       }
 
       /* Four brightness tiers */
-      const roll = Math.random();
-      let r, baseA, glow = false;
-      if (roll < 0.58) {
-        r = Math.random() * 0.7 + 0.4;  baseA = Math.random() * 0.4 + 0.38;
-      } else if (roll < 0.84) {
-        r = Math.random() * 0.9 + 0.9;  baseA = Math.random() * 0.25 + 0.60;
-      } else if (roll < 0.97) {
-        r = Math.random() * 1.2 + 1.6;  baseA = Math.random() * 0.15 + 0.80; glow = true;
-      } else {
-        r = Math.random() * 1.5 + 2.8;  baseA = 1.0; glow = true;
+      const roll = Math.random(); // Declara una variable
+      let r, baseA, glow = false; // Declara una variable
+      if (roll < 0.58) { // Condición
+        r = Math.random() * 0.7 + 0.4;  baseA = Math.random() * 0.4 + 0.38; // Asigna un valor
+      } else if (roll < 0.84) { // Instrucción
+        r = Math.random() * 0.9 + 0.9;  baseA = Math.random() * 0.25 + 0.60; // Asigna un valor
+      } else if (roll < 0.97) { // Instrucción
+        r = Math.random() * 1.2 + 1.6;  baseA = Math.random() * 0.15 + 0.80; glow = true; // Asigna un valor
+      } else { // Instrucción
+        r = Math.random() * 1.5 + 2.8;  baseA = 1.0; glow = true; // Asigna un valor
       }
 
-      if (inBand) baseA = Math.min(1.0, baseA * 1.25);
+      if (inBand) baseA = Math.min(1.0, baseA * 1.25); // Condición
 
-      stars.push({
-        x, y, r, baseA, glow,
-        a:     baseA,
-        da:    (Math.random() - 0.5) * 0.004,
-        drift: (Math.random() - 0.5) * 0.012,
+      stars.push({ // Llama a una función
+        x, y, r, baseA, glow, // Instrucción
+        a:     baseA, // Instrucción
+        da:    (Math.random() - 0.5) * 0.004, // Instrucción
+        drift: (Math.random() - 0.5) * 0.012, // Instrucción
         tick:  Math.floor(Math.random() * 2), /* stagger twinkle updates */
       });
     }
   }
 
-  function build() {
-    buildFog();
-    buildStars();
+  function build() { // Función
+    buildFog(); // Llama a una función
+    buildStars(); // Llama a una función
   }
 
-  window.addEventListener('resize', () => {
-    CW = canvas.width  = window.innerWidth;
-    CH = canvas.height = window.innerHeight;
-    build();
+  window.addEventListener('resize', () => { // Escucha un evento
+    CW = canvas.width  = window.innerWidth; // Asigna un valor
+    CH = canvas.height = window.innerHeight; // Asigna un valor
+    build(); // Llama a una función
   });
 
   /* ── Shooting stars ── */
-  let shooters = [];
+  let shooters = []; // Declara una variable
   let nextShoot = 300; /* frames until next shooting star */
 
-  function spawnShooter() {
-    const fromTop = Math.random() < 0.6;
-    let x, y, vx, vy;
-    if (fromTop) {
-      x = Math.random() * CW * 0.8 + CW * 0.1; y = -5;
-      vx = (Math.random() - 0.4) * 8; vy = Math.random() * 5 + 4;
-    } else {
-      x = -5; y = Math.random() * CH * 0.55;
-      vx = Math.random() * 7 + 4; vy = (Math.random() - 0.2) * 3 + 1;
+  function spawnShooter() { // Función
+    const fromTop = Math.random() < 0.6; // Declara una variable
+    let x, y, vx, vy; // Declara una variable
+    if (fromTop) { // Condición
+      x = Math.random() * CW * 0.8 + CW * 0.1; y = -5; // Asigna un valor
+      vx = (Math.random() - 0.4) * 8; vy = Math.random() * 5 + 4; // Asigna un valor
+    } else { // Instrucción
+      x = -5; y = Math.random() * CH * 0.55; // Asigna un valor
+      vx = Math.random() * 7 + 4; vy = (Math.random() - 0.2) * 3 + 1; // Asigna un valor
     }
-    const spd  = Math.sqrt(vx * vx + vy * vy);
-    const tail = Math.random() * 120 + 80;
-    shooters.push({ x, y, vx, vy, spd, tail, life: 1.0, decay: 0.012 + Math.random() * 0.01 });
+    const spd  = Math.sqrt(vx * vx + vy * vy); // Declara una variable
+    const tail = Math.random() * 120 + 80; // Declara una variable
+    shooters.push({ x, y, vx, vy, spd, tail, life: 1.0, decay: 0.012 + Math.random() * 0.01 }); // Llama a una función
     nextShoot = 200 + Math.floor(Math.random() * 250); /* ~3-7 s at 60fps */
   }
 
   /* ── Mouse / Touch stardust ── */
-  let particles = [];
-  let mouseX = -999, mouseY = -999, lastMX = -999, lastMY = -999;
+  let particles = []; // Declara una variable
+  let mouseX = -999, mouseY = -999, lastMX = -999, lastMY = -999; // Declara una variable
 
-  function spawnDust(cx, cy) {
-    const dx = cx - lastMX, dy = cy - lastMY;
-    const spd = Math.sqrt(dx * dx + dy * dy);
-    if (spd < 1.5) return;
+  function spawnDust(cx, cy) { // Función
+    const dx = cx - lastMX, dy = cy - lastMY; // Declara una variable
+    const spd = Math.sqrt(dx * dx + dy * dy); // Declara una variable
+    if (spd < 1.5) return; // Condición
 
-    const burst = Math.min(Math.floor(spd * 0.3) + 1, 5);
-    const nx = dx / spd, ny = dy / spd;
-    for (let i = 0; i < burst; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 3.0 + 0.6;
-      particles.push({
-        x:     cx + (Math.random() - 0.5) * 10,
-        y:     cy + (Math.random() - 0.5) * 10,
-        vx:    Math.cos(angle) * speed * 0.5 + nx * speed * 0.6,
-        vy:    Math.sin(angle) * speed * 0.5 + ny * speed * 0.6,
-        r:     Math.random() * 3.0 + 1.0,
-        life:  1.0,
-        decay: Math.random() * 0.018 + 0.008,
+    const burst = Math.min(Math.floor(spd * 0.3) + 1, 5); // Declara una variable
+    const nx = dx / spd, ny = dy / spd; // Declara una variable
+    for (let i = 0; i < burst; i++) { // Bucle
+      const angle = Math.random() * Math.PI * 2; // Declara una variable
+      const speed = Math.random() * 3.0 + 0.6; // Declara una variable
+      particles.push({ // Llama a una función
+        x:     cx + (Math.random() - 0.5) * 10, // Instrucción
+        y:     cy + (Math.random() - 0.5) * 10, // Instrucción
+        vx:    Math.cos(angle) * speed * 0.5 + nx * speed * 0.6, // Instrucción
+        vy:    Math.sin(angle) * speed * 0.5 + ny * speed * 0.6, // Instrucción
+        r:     Math.random() * 3.0 + 1.0, // Instrucción
+        life:  1.0, // Instrucción
+        decay: Math.random() * 0.018 + 0.008, // Instrucción
       });
     }
-    if (particles.length > 80) particles.splice(0, particles.length - 80);
-    lastMX = cx; lastMY = cy;
+    if (particles.length > 80) particles.splice(0, particles.length - 80); // Condición
+    lastMX = cx; lastMY = cy; // Asigna un valor
   }
 
-  document.addEventListener('mousemove', e => {
-    const px = mouseX, py = mouseY;
-    lastMX = px; lastMY = py;
-    mouseX = e.clientX; mouseY = e.clientY;
-    spawnDust(mouseX, mouseY);
+  document.addEventListener('mousemove', e => { // Escucha un evento
+    const px = mouseX, py = mouseY; // Declara una variable
+    lastMX = px; lastMY = py; // Asigna un valor
+    mouseX = e.clientX; mouseY = e.clientY; // Asigna un valor
+    spawnDust(mouseX, mouseY); // Llama a una función
   });
 
   /* Touch support — doesn't block page scrolling */
-  document.addEventListener('touchmove', e => {
-    const t = e.touches[0];
-    spawnDust(t.clientX, t.clientY);
-    lastMX = t.clientX; lastMY = t.clientY;
-  }, { passive: true });
+  document.addEventListener('touchmove', e => { // Escucha un evento
+    const t = e.touches[0]; // Declara una variable
+    spawnDust(t.clientX, t.clientY); // Llama a una función
+    lastMX = t.clientX; lastMY = t.clientY; // Asigna un valor
+  }, { passive: true }); // Instrucción
 
   /* ── Draw loop ── */
-  let frame = 0;
+  let frame = 0; // Declara una variable
 
-  function drawFrame() {
-    frame++;
+  function drawFrame() { // Función
+    frame++; // Instrucción
 
     /* 1. Black background */
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, CW, CH);
+    ctx.fillStyle = '#000000'; // Asigna un valor
+    ctx.fillRect(0, 0, CW, CH); // Llama a una función
 
     /* 2. Static galaxy fog (one drawImage, nearly free) */
-    ctx.drawImage(fogCanvas, 0, 0);
+    ctx.drawImage(fogCanvas, 0, 0); // Llama a una función
 
     /* 3. Stars — simple filled arcs + glow halo for bright ones */
-    ctx.fillStyle = '#ffffff';
-    const oddFrame = frame & 1;
-    for (let i = 0; i < stars.length; i++) {
-      const s = stars[i];
+    ctx.fillStyle = '#ffffff'; // Asigna un valor
+    const oddFrame = frame & 1; // Declara una variable
+    for (let i = 0; i < stars.length; i++) { // Bucle
+      const s = stars[i]; // Declara una variable
       /* Twinkle: each star updates every other frame, staggered */
-      if (s.tick !== oddFrame) {
+      if (s.tick !== oddFrame) { // Condición
         s.a += s.da * 2; /* compensate for skipped frame */
-        if (s.a > s.baseA * 1.5 || s.a < s.baseA * 0.3) s.da = -s.da;
+        if (s.a > s.baseA * 1.5 || s.a < s.baseA * 0.3) s.da = -s.da; // Condición
       }
-      s.x += s.drift;
-      if (s.x > CW + 2) s.x = -2;
-      if (s.x < -2)     s.x = CW + 2;
+      s.x += s.drift; // Instrucción
+      if (s.x > CW + 2) s.x = -2; // Condición
+      if (s.x < -2)     s.x = CW + 2; // Condición
 
-      const alpha = Math.max(0, Math.min(1, s.a));
-      if (s.glow && alpha > 0.4) {
+      const alpha = Math.max(0, Math.min(1, s.a)); // Declara una variable
+      if (s.glow && alpha > 0.4) { // Condición
         /* Halo — only draw when visible */
-        ctx.globalAlpha = alpha * 0.20;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r * 4.0, 0, 6.283);
-        ctx.fill();
-        ctx.globalAlpha = alpha * 0.42;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r * 2.0, 0, 6.283);
-        ctx.fill();
+        ctx.globalAlpha = alpha * 0.20; // Asigna un valor
+        ctx.beginPath(); // Llama a una función
+        ctx.arc(s.x, s.y, s.r * 4.0, 0, 6.283); // Llama a una función
+        ctx.fill(); // Llama a una función
+        ctx.globalAlpha = alpha * 0.42; // Asigna un valor
+        ctx.beginPath(); // Llama a una función
+        ctx.arc(s.x, s.y, s.r * 2.0, 0, 6.283); // Llama a una función
+        ctx.fill(); // Llama a una función
       }
-      ctx.globalAlpha = alpha;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, 6.283);
-      ctx.fill();
+      ctx.globalAlpha = alpha; // Asigna un valor
+      ctx.beginPath(); // Llama a una función
+      ctx.arc(s.x, s.y, s.r, 0, 6.283); // Llama a una función
+      ctx.fill(); // Llama a una función
     }
-    ctx.globalAlpha = 1;
+    ctx.globalAlpha = 1; // Asigna un valor
 
     /* 4. Shooting stars */
-    if (--nextShoot <= 0) spawnShooter();
-    for (let i = shooters.length - 1; i >= 0; i--) {
-      const s = shooters[i];
-      s.life -= s.decay;
-      if (s.life <= 0) { shooters.splice(i, 1); continue; }
+    if (--nextShoot <= 0) spawnShooter(); // Condición
+    for (let i = shooters.length - 1; i >= 0; i--) { // Bucle
+      const s = shooters[i]; // Declara una variable
+      s.life -= s.decay; // Instrucción
+      if (s.life <= 0) { shooters.splice(i, 1); continue; } // Condición
 
-      const nx = s.vx / s.spd, ny = s.vy / s.spd;
-      const grd = ctx.createLinearGradient(s.x, s.y, s.x - nx * s.tail, s.y - ny * s.tail);
-      grd.addColorStop(0,   `rgba(255,255,255,${s.life.toFixed(2)})`);
-      grd.addColorStop(0.3, `rgba(220,220,220,${(s.life * 0.4).toFixed(2)})`);
-      grd.addColorStop(1,   'rgba(255,255,255,0)');
-      ctx.beginPath();
-      ctx.moveTo(s.x, s.y);
-      ctx.lineTo(s.x - nx * s.tail, s.y - ny * s.tail);
-      ctx.lineWidth   = 2;
-      ctx.strokeStyle = grd;
-      ctx.stroke();
+      const nx = s.vx / s.spd, ny = s.vy / s.spd; // Declara una variable
+      const grd = ctx.createLinearGradient(s.x, s.y, s.x - nx * s.tail, s.y - ny * s.tail); // Declara una variable
+      grd.addColorStop(0,   `rgba(255,255,255,${s.life.toFixed(2)})`); // Llama a una función
+      grd.addColorStop(0.3, `rgba(220,220,220,${(s.life * 0.4).toFixed(2)})`); // Llama a una función
+      grd.addColorStop(1,   'rgba(255,255,255,0)'); // Llama a una función
+      ctx.beginPath(); // Llama a una función
+      ctx.moveTo(s.x, s.y); // Llama a una función
+      ctx.lineTo(s.x - nx * s.tail, s.y - ny * s.tail); // Llama a una función
+      ctx.lineWidth   = 2; // Asigna un valor
+      ctx.strokeStyle = grd; // Asigna un valor
+      ctx.stroke(); // Llama a una función
       /* Bright head */
-      ctx.globalAlpha = s.life;
-      ctx.fillStyle   = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, 2, 0, 6.283);
-      ctx.fill();
-      ctx.globalAlpha = 1;
+      ctx.globalAlpha = s.life; // Asigna un valor
+      ctx.fillStyle   = '#ffffff'; // Asigna un valor
+      ctx.beginPath(); // Llama a una función
+      ctx.arc(s.x, s.y, 2, 0, 6.283); // Llama a una función
+      ctx.fill(); // Llama a una función
+      ctx.globalAlpha = 1; // Asigna un valor
 
-      s.x += s.vx; s.y += s.vy;
+      s.x += s.vx; s.y += s.vy; // Instrucción
     }
 
     /* 5. Mouse stardust — simple circles with globalAlpha, NO radial gradient */
-    for (let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i];
-      p.life -= p.decay;
-      if (p.life <= 0) { particles.splice(i, 1); continue; }
-      p.x  += p.vx;
-      p.y  += p.vy;
-      p.vy += 0.04;
-      p.vx *= 0.97;
+    for (let i = particles.length - 1; i >= 0; i--) { // Bucle
+      const p = particles[i]; // Declara una variable
+      p.life -= p.decay; // Instrucción
+      if (p.life <= 0) { particles.splice(i, 1); continue; } // Condición
+      p.x  += p.vx; // Instrucción
+      p.y  += p.vy; // Instrucción
+      p.vy += 0.04; // Instrucción
+      p.vx *= 0.97; // Instrucción
 
-      ctx.globalAlpha = Math.min(1, p.life * 1.2);
-      ctx.fillStyle   = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, 6.283);
-      ctx.fill();
+      ctx.globalAlpha = Math.min(1, p.life * 1.2); // Asigna un valor
+      ctx.fillStyle   = '#ffffff'; // Asigna un valor
+      ctx.beginPath(); // Llama a una función
+      ctx.arc(p.x, p.y, p.r, 0, 6.283); // Llama a una función
+      ctx.fill(); // Llama a una función
       /* Outer glow — one cheap larger circle at low alpha */
-      ctx.globalAlpha = p.life * 0.25;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r * 3.5, 0, 6.283);
-      ctx.fill();
+      ctx.globalAlpha = p.life * 0.25; // Asigna un valor
+      ctx.beginPath(); // Llama a una función
+      ctx.arc(p.x, p.y, p.r * 3.5, 0, 6.283); // Llama a una función
+      ctx.fill(); // Llama a una función
     }
-    ctx.globalAlpha = 1;
+    ctx.globalAlpha = 1; // Asigna un valor
 
-    rafId = requestAnimationFrame(drawFrame);
+    rafId = requestAnimationFrame(drawFrame); // Asigna un valor
   }
 
   /* Respect prefers-reduced-motion: skip continuous animation */
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    canvas.style.opacity = '0.4';
-    build();
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { // Condición
+    canvas.style.opacity = '0.4'; // Asigna un valor
+    build(); // Llama a una función
     /* Draw one static frame only */
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, CW, CH);
-    ctx.drawImage(fogCanvas, 0, 0);
-    return;
+    ctx.fillStyle = '#000000'; // Asigna un valor
+    ctx.fillRect(0, 0, CW, CH); // Llama a una función
+    ctx.drawImage(fogCanvas, 0, 0); // Llama a una función
+    return; // Devuelve el resultado
   }
 
-  build();
+  build(); // Llama a una función
 
   /* Track RAF id so we can pause when tab is hidden */
-  let rafId;
-  function drawLoop() { rafId = requestAnimationFrame(drawFrame); }
+  let rafId; // Declara una variable
+  function drawLoop() { rafId = requestAnimationFrame(drawFrame); } // Función
 
   /* Pause animation when tab is hidden — saves battery on mobile */
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      cancelAnimationFrame(rafId);
-    } else {
-      drawLoop();
+  document.addEventListener('visibilitychange', () => { // Escucha un evento
+    if (document.hidden) { // Condición
+      cancelAnimationFrame(rafId); // Llama a una función
+    } else { // Instrucción
+      drawLoop(); // Llama a una función
     }
   });
 
-  drawLoop();
-})();
+  drawLoop(); // Llama a una función
+})(); // Instrucción
 
 
 /* ══════════════════════════════════════════════════════════════
    SECTION 2 — FORUM APPLICATION
 ══════════════════════════════════════════════════════════════ */
 
-(function () {
+(function () { // Instrucción
 
-  const API_URL = 'api.php';
+  const API_URL = 'api.php'; // Declara una variable
 
-  const CAT_LABELS = {
-    fps: 'FPS', moba: 'MOBA', hardware: 'Hardware',
-    noticias: 'Noticias', estrategia: 'Estrategia'
+  const CAT_LABELS = { // Declara una variable
+    fps: 'FPS', moba: 'MOBA', hardware: 'Hardware', // Instrucción
+    noticias: 'Noticias', estrategia: 'Estrategia' // Instrucción
   };
 
   /* ── Avatar palette — black & white gradient pairs ── */
-  const AVATAR_PALETTE = [
-    ['#ffffff','#888888'],
-    ['#d0d0d0','#404040'],
-    ['#e8e8e8','#606060'],
-    ['#b0b0b0','#282828'],
-    ['#f0f0f0','#707070'],
-    ['#c0c0c0','#303030'],
-    ['#a8a8a8','#181818'],
-    ['#dcdcdc','#505050'],
-    ['#e0e0e0','#383838'],
-    ['#c8c8c8','#484848']
-  ];
+  const AVATAR_PALETTE = [ // Declara una variable
+    ['#ffffff','#888888'], // Instrucción
+    ['#d0d0d0','#404040'], // Instrucción
+    ['#e8e8e8','#606060'], // Instrucción
+    ['#b0b0b0','#282828'], // Instrucción
+    ['#f0f0f0','#707070'], // Instrucción
+    ['#c0c0c0','#303030'], // Instrucción
+    ['#a8a8a8','#181818'], // Instrucción
+    ['#dcdcdc','#505050'], // Instrucción
+    ['#e0e0e0','#383838'], // Instrucción
+    ['#c8c8c8','#484848'] // Instrucción
+  ]; // Instrucción
 
   /* ═══════════════════════════════════════════════════════════
      HELPERS
   ═══════════════════════════════════════════════════════════ */
 
-  function avatarStyle(str) {
-    let h = 0;
-    for (let i = 0; i < (str || '').length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
-    const [c1, c2] = AVATAR_PALETTE[Math.abs(h) % AVATAR_PALETTE.length];
-    return `background:linear-gradient(135deg,${c1},${c2})`;
+  function avatarStyle(str) { // Función
+    let h = 0; // Declara una variable
+    for (let i = 0; i < (str || '').length; i++) h = str.charCodeAt(i) + ((h << 5) - h); // Bucle
+    const [c1, c2] = AVATAR_PALETTE[Math.abs(h) % AVATAR_PALETTE.length]; // Declara una variable
+    return `background:linear-gradient(135deg,${c1},${c2})`; // Devuelve el resultado
   }
 
-  function avatarInitial(str) {
-    return (str || '?').charAt(0).toUpperCase();
+  function avatarInitial(str) { // Función
+    return (str || '?').charAt(0).toUpperCase(); // Devuelve el resultado
   }
 
-  function esc(str) {
-    return String(str ?? '')
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  function esc(str) { // Función
+    return String(str ?? '') // Devuelve el resultado
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') // Instrucción
+      .replace(/"/g,'&quot;').replace(/'/g,'&#039;'); // Instrucción
   }
 
-  function fmtDate(ds) {
-    return new Date(ds).toLocaleDateString('es-ES', {
-      day:'2-digit', month:'short', year:'numeric',
-      hour:'2-digit', minute:'2-digit'
+  function fmtDate(ds) { // Función
+    return new Date(ds).toLocaleDateString('es-ES', { // Devuelve el resultado
+      day:'2-digit', month:'short', year:'numeric', // Instrucción
+      hour:'2-digit', minute:'2-digit' // Instrucción
     });
   }
 
-  function fmtNumber(n) {
-    n = Number(n) || 0;
-    return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
+  function fmtNumber(n) { // Función
+    n = Number(n) || 0; // Asigna un valor
+    return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n); // Devuelve el resultado
   }
 
-  function catClass(cat) {
-    return ['fps','moba','hardware','noticias','estrategia'].includes(cat) ? `cat-${cat}` : 'cat-default';
+  function catClass(cat) { // Función
+    return ['fps','moba','hardware','noticias','estrategia'].includes(cat) ? `cat-${cat}` : 'cat-default'; // Devuelve el resultado
   }
 
   /* ═══════════════════════════════════════════════════════════
      TOAST NOTIFICATIONS
   ═══════════════════════════════════════════════════════════ */
 
-  function toast(msg, type = 'info') {
-    const wrap = document.querySelector('[data-toast-wrap]');
-    if (!wrap) return;
-    const el = document.createElement('div');
-    el.className = `toast toast-${type}`;
-    el.textContent = msg;
-    wrap.appendChild(el);
-    setTimeout(() => {
-      el.classList.add('toast-exit');
-      setTimeout(() => el.remove(), 380);
-    }, 3400);
+  function toast(msg, type = 'info') { // Función
+    const wrap = document.querySelector('[data-toast-wrap]'); // Declara una variable
+    if (!wrap) return; // Condición
+    const el = document.createElement('div'); // Declara una variable
+    el.className = `toast toast-${type}`; // Asigna un valor
+    el.textContent = msg; // Fija el texto del elemento
+    wrap.appendChild(el); // Añade el elemento al DOM
+    setTimeout(() => { // Temporizador
+      el.classList.add('toast-exit'); // Cambia clases CSS
+      setTimeout(() => el.remove(), 380); // Elimina el elemento del DOM
+    }, 3400); // Instrucción
   }
 
   /* ═══════════════════════════════════════════════════════════
      API
   ═══════════════════════════════════════════════════════════ */
 
-  async function api(action, method = 'GET', body = null, params = {}) {
-    const qs   = new URLSearchParams({ action, ...params });
-    const opts = { method, headers: {} };
-    if (method === 'POST' && body) {
-      opts.headers['Content-Type'] = 'application/json';
-      opts.body = JSON.stringify(body);
+  async function api(action, method = 'GET', body = null, params = {}) { // Función
+    const qs   = new URLSearchParams({ action, ...params }); // Declara una variable
+    const opts = { method, headers: {} }; // Declara una variable
+    if (method === 'POST' && body) { // Condición
+      opts.headers['Content-Type'] = 'application/json'; // Instrucción
+      opts.body = JSON.stringify(body); // Asigna un valor
     }
-    try {
-      const res = await fetch(`${API_URL}?${qs}`, opts);
-      return await res.json();
-    } catch {
-      return null;
+    try { // Instrucción
+      const res = await fetch(`${API_URL}?${qs}`, opts); // Declara una variable
+      return await res.json(); // Devuelve el resultado
+    } catch { // Instrucción
+      return null; // Devuelve el resultado
     }
   }
 
@@ -425,65 +425,65 @@
      CURRENT USER
   ═══════════════════════════════════════════════════════════ */
 
-  function getUser() {
-    const u = window.NEXUS_CURRENT_USER;
-    if (!u) return null;
-    return { ...u, name: u.nombre || 'Usuario', favoriteGame: u.favorite_game || 'Gaming' };
+  function getUser() { // Función
+    const u = window.NEXUS_CURRENT_USER; // Declara una variable
+    if (!u) return null; // Condición
+    return { ...u, name: u.nombre || 'Usuario', favoriteGame: u.favorite_game || 'Gaming' }; // Devuelve el resultado
   }
 
   /* ═══════════════════════════════════════════════════════════
      SCROLL REVEAL
   ═══════════════════════════════════════════════════════════ */
 
-  function setupScrollReveal() {
-    if (!('IntersectionObserver' in window)) {
-      document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('revealed'));
-      return;
+  function setupScrollReveal() { // Función
+    if (!('IntersectionObserver' in window)) { // Condición
+      document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('revealed')); // Busca elemento(s) en el DOM
+      return; // Devuelve el resultado
     }
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          io.unobserve(entry.target);
+    const io = new IntersectionObserver((entries) => { // Función flecha
+      entries.forEach(entry => { // Recorre la lista
+        if (entry.isIntersecting) { // Condición
+          entry.target.classList.add('revealed'); // Cambia clases CSS
+          io.unobserve(entry.target); // Llama a una función
         }
       });
-    }, { threshold: 0.08 });
-    document.querySelectorAll('.reveal-on-scroll').forEach(el => io.observe(el));
+    }, { threshold: 0.08 }); // Instrucción
+    document.querySelectorAll('.reveal-on-scroll').forEach(el => io.observe(el)); // Busca elemento(s) en el DOM
   }
 
   /* ═══════════════════════════════════════════════════════════
      MOBILE NAV
   ═══════════════════════════════════════════════════════════ */
 
-  function setupMobileNav() {
-    const btn = document.querySelector('[data-hamburger]');
-    const nav = document.querySelector('[data-mobile-nav]');
-    if (!btn || !nav) return;
-    btn.addEventListener('click', () => {
-      const open = nav.classList.toggle('is-open');
-      btn.classList.toggle('is-open', open);
+  function setupMobileNav() { // Función
+    const btn = document.querySelector('[data-hamburger]'); // Declara una variable
+    const nav = document.querySelector('[data-mobile-nav]'); // Declara una variable
+    if (!btn || !nav) return; // Condición
+    btn.addEventListener('click', () => { // Escucha un evento
+      const open = nav.classList.toggle('is-open'); // Declara una variable
+      btn.classList.toggle('is-open', open); // Cambia clases CSS
     });
-    nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-      nav.classList.remove('is-open');
-      btn.classList.remove('is-open');
-    }));
+    nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { // Escucha un evento
+      nav.classList.remove('is-open'); // Cambia clases CSS
+      btn.classList.remove('is-open'); // Cambia clases CSS
+    })); // Instrucción
   }
 
   /* ═══════════════════════════════════════════════════════════
      AUTH SLOT (header right side)
   ═══════════════════════════════════════════════════════════ */
 
-  function renderAuthSlot() {
-    const slot = document.querySelector('[data-auth-slot]');
-    if (!slot) return;
-    const user = getUser();
+  function renderAuthSlot() { // Función
+    const slot = document.querySelector('[data-auth-slot]'); // Declara una variable
+    if (!slot) return; // Condición
+    const user = getUser(); // Declara una variable
 
-    if (!user) {
-      slot.innerHTML = `<a class="btn-nav-login" href="login.php">Iniciar sesión</a>`;
-      return;
+    if (!user) { // Condición
+      slot.innerHTML = `<a class="btn-nav-login" href="login.php">Iniciar sesión</a>`; // Inyecta HTML en el elemento
+      return; // Devuelve el resultado
     }
 
-    const roleLabel = user.role === 'admin' ? 'Admin' : 'Miembro';
+    const roleLabel = user.role === 'admin' ? 'Admin' : 'Miembro'; // Declara una variable
     slot.innerHTML = `
       <div class="user-chip">
         <span class="chip-ava" style="${avatarStyle(user.username || user.name)}">${avatarInitial(user.username || user.name)}</span>
@@ -493,9 +493,9 @@
         </div>
         <button class="btn-chip-out" type="button" data-logout>Salir</button>
       </div>
-    `;
-    slot.querySelector('[data-logout]')?.addEventListener('click', () => {
-      window.location.href = 'logout.php';
+    `; // Instrucción
+    slot.querySelector('[data-logout]')?.addEventListener('click', () => { // Escucha un evento
+      window.location.href = 'logout.php'; // Asigna un valor
     });
   }
 
@@ -503,41 +503,41 @@
      STATS BAR
   ═══════════════════════════════════════════════════════════ */
 
-  async function updateStats() {
-    const stats = await api('get_stats');
-    if (!stats) return;
+  async function updateStats() { // Función
+    const stats = await api('get_stats'); // Declara una variable
+    if (!stats) return; // Condición
 
-    const set = (sel, val) => {
-      const el = document.querySelector(sel);
-      if (el) el.textContent = fmtNumber(val || 0);
+    const set = (sel, val) => { // Función flecha
+      const el = document.querySelector(sel); // Declara una variable
+      if (el) el.textContent = fmtNumber(val || 0); // Condición
     };
 
-    set('[data-stat-posts]',    stats.posts);
-    set('[data-stat-users]',    stats.users);
-    set('[data-stat-online]',   Math.max(1, Math.min(stats.users || 0, (stats.posts || 0) + 2)));
-    set('[data-approved-count]',stats.posts);
-    set('[data-pending-count]', stats.pending);
-    set('[data-likes-count]',   stats.likes);
+    set('[data-stat-posts]',    stats.posts); // Llama a una función
+    set('[data-stat-users]',    stats.users); // Llama a una función
+    set('[data-stat-online]',   Math.max(1, Math.min(stats.users || 0, (stats.posts || 0) + 2))); // Llama a una función
+    set('[data-approved-count]',stats.posts); // Llama a una función
+    set('[data-pending-count]', stats.pending); // Llama a una función
+    set('[data-likes-count]',   stats.likes); // Llama a una función
   }
 
   /* ═══════════════════════════════════════════════════════════
      SESSION PANEL (sidebar)
   ═══════════════════════════════════════════════════════════ */
 
-  function renderSessionPanel() {
-    const panel = document.querySelector('[data-session-panel]');
-    if (!panel) return;
-    const user = getUser();
+  function renderSessionPanel() { // Función
+    const panel = document.querySelector('[data-session-panel]'); // Declara una variable
+    if (!panel) return; // Condición
+    const user = getUser(); // Declara una variable
 
-    if (!user) {
+    if (!user) { // Condición
       panel.innerHTML = `
         <p style="font-size:0.84rem;color:var(--white-dim);margin:0 0 14px;line-height:1.65;">
           Inicia sesión para publicar temas, dar likes y acceder a tu perfil.
         </p>
         <a class="btn btn-primary btn-sm" href="login.php" style="width:100%;justify-content:center;margin-bottom:8px;">Iniciar sesión</a>
         <a class="btn btn-ghost btn-sm" href="register.php" style="width:100%;justify-content:center;">Crear cuenta gratis</a>
-      `;
-      return;
+      `; // Instrucción
+      return; // Devuelve el resultado
     }
 
     panel.innerHTML = `
@@ -549,45 +549,45 @@
         </div>
       </div>
       ${user.bio ? `<p class="session-bio">${esc(user.bio)}</p>` : ''}
-    `;
+    `; // Instrucción
   }
 
   /* ═══════════════════════════════════════════════════════════
      POSTS FEED
   ═══════════════════════════════════════════════════════════ */
 
-  async function renderPosts() {
-    const list  = document.querySelector('[data-post-list]');
-    const empty = document.querySelector('[data-empty-state]');
-    if (!list) return;
+  async function renderPosts() { // Función
+    const list  = document.querySelector('[data-post-list]'); // Declara una variable
+    const empty = document.querySelector('[data-empty-state]'); // Declara una variable
+    if (!list) return; // Condición
 
-    const user     = getUser();
-    const category = document.querySelector('[data-category-filters] .cat-btn.is-active')?.dataset.category || 'all';
-    const search   = (document.querySelector('[data-search-input]')?.value || '').trim();
-    const sort     = document.querySelector('[data-sort-select]')?.value || 'recent';
+    const user     = getUser(); // Declara una variable
+    const category = document.querySelector('[data-category-filters] .cat-btn.is-active')?.dataset.category || 'all'; // Declara una variable
+    const search   = (document.querySelector('[data-search-input]')?.value || '').trim(); // Declara una variable
+    const sort     = document.querySelector('[data-sort-select]')?.value || 'recent'; // Declara una variable
 
-    const params = { sort };
-    if (category !== 'all') params.category = category;
-    if (search) params.search = search;
+    const params = { sort }; // Declara una variable
+    if (category !== 'all') params.category = category; // Condición
+    if (search) params.search = search; // Condición
 
-    const result = await api('get_posts', 'GET', null, params);
-    if (!result) return;
-    const posts = Array.isArray(result) ? result : (result.data ?? []);
+    const result = await api('get_posts', 'GET', null, params); // Declara una variable
+    if (!result) return; // Condición
+    const posts = Array.isArray(result) ? result : (result.data ?? []); // Declara una variable
 
-    if (!posts.length) {
-      list.innerHTML = '';
-      empty?.classList.remove('hidden');
-      return;
+    if (!posts.length) { // Condición
+      list.innerHTML = ''; // Inyecta HTML en el elemento
+      empty?.classList.remove('hidden'); // Cambia clases CSS
+      return; // Devuelve el resultado
     }
 
-    empty?.classList.add('hidden');
+    empty?.classList.add('hidden'); // Cambia clases CSS
 
-    const isAuthor = p => user && Number(user.id) === Number(p.author_id);
+    const isAuthor = p => user && Number(user.id) === Number(p.author_id); // Función flecha
 
     list.innerHTML = posts.map(p => `
       <article class="post-card">
         <div class="post-vote">
-          <button class="vote-btn" type="button" data-like-post="${p.id}" title="Me gusta esta publicación">▲</button>
+          <button class="vote-btn" type="button" data-like-post="${p.id}" title="Me gusta esta publicación">+1</button>
           <span class="vote-count">${fmtNumber(p.likes || 0)}</span>
         </div>
         <div class="post-body">
@@ -598,111 +598,115 @@
           <h3 class="post-title">${esc(p.title)}</h3>
           <p class="post-excerpt">${esc(p.content)}</p>
           <div class="post-footer">
-            <div class="post-author">
-              <span class="avatar ava-sm" style="${avatarStyle(p.username)}">${avatarInitial(p.username)}</span>
-              <span class="post-author-name">@${esc(p.username || 'anon')}</span>
+            <div class="post-meta">
+              <div class="post-author">
+                <span class="avatar ava-sm" style="${avatarStyle(p.username)}">${avatarInitial(p.username)}</span>
+                <span class="post-author-name">@${esc(p.username || 'anon')}</span>
+              </div>
+              <span class="post-dot" aria-hidden="true">·</span>
+              <span class="post-game">${esc(p.favorite_game || 'Gaming')}</span>
+              <span class="post-dot" aria-hidden="true">·</span>
+              <span class="post-date">${fmtDate(p.created_at)}</span>
             </div>
-            <span class="post-game">🎮 ${esc(p.favorite_game || 'Gaming')}</span>
             <div class="post-actions">
               ${user
                 ? `<button class="btn btn-ghost btn-sm" type="button" data-open-composer>Responder</button>`
                 : `<a class="btn btn-ghost btn-sm" href="login.php">Responder</a>`}
             </div>
-            <span class="post-date">${fmtDate(p.created_at)}</span>
           </div>
         </div>
       </article>
-    `).join('');
+    `).join(''); // Instrucción
 
-    list.querySelectorAll('[data-like-post]').forEach(btn =>
-      btn.addEventListener('click', () => likePost(btn.dataset.likePost, btn))
-    );
-    list.querySelectorAll('[data-open-composer]').forEach(btn =>
-      btn.addEventListener('click', () => toggleComposer(true))
-    );
+    list.querySelectorAll('[data-like-post]').forEach(btn => // Busca elemento(s) en el DOM
+      btn.addEventListener('click', () => likePost(btn.dataset.likePost, btn)) // Escucha un evento
+    ); // Instrucción
+    list.querySelectorAll('[data-open-composer]').forEach(btn => // Busca elemento(s) en el DOM
+      btn.addEventListener('click', () => toggleComposer(true)) // Escucha un evento
+    ); // Instrucción
   }
 
-  async function likePost(id, btn) {
-    if (!getUser()) { toast('Inicia sesión para dar likes', 'info'); return; }
-    if (btn) {
-      btn.style.color        = 'var(--accent)';
-      btn.style.borderColor  = 'var(--accent)';
-      btn.style.textShadow   = '0 0 8px rgba(200,216,240,0.5)';
+  async function likePost(id, btn) { // Función
+    if (!getUser()) { toast('Inicia sesión para dar likes', 'info'); return; } // Condición
+    if (btn) { // Condición
+      btn.style.color        = 'var(--accent)'; // Asigna un valor
+      btn.style.borderColor  = 'var(--accent)'; // Asigna un valor
+      btn.style.textShadow   = '0 0 8px rgba(200,216,240,0.5)'; // Asigna un valor
     }
-    await api('like_post', 'POST', { post_id: parseInt(id) });
-    renderPosts();
-    updateStats();
+    await api('like_post', 'POST', { post_id: parseInt(id) }); // Llama a la API y espera la respuesta
+    renderPosts(); // Llama a una función
+    updateStats(); // Llama a una función
   }
 
   /* ═══════════════════════════════════════════════════════════
      POST COMPOSER
   ═══════════════════════════════════════════════════════════ */
 
-  function toggleComposer(forceOpen) {
-    const panel = document.querySelector('[data-composer-panel]');
-    if (!panel) return;
-    if (!getUser()) { window.location.href = 'login.php'; return; }
-    if (forceOpen === true) panel.classList.remove('hidden');
-    else panel.classList.toggle('hidden');
+  function toggleComposer(forceOpen) { // Función
+    const panel = document.querySelector('[data-composer-panel]'); // Declara una variable
+    if (!panel) return; // Condición
+    if (!getUser()) { window.location.href = 'login.php'; return; } // Condición
+    if (forceOpen === true) panel.classList.remove('hidden'); // Condición
+    else panel.classList.toggle('hidden'); // Caso alternativo
   }
 
-  function setNotice(el, msg, type) {
-    if (!el) return;
-    el.textContent = msg;
-    el.className   = `notice-inline is-${type}`;
+  function setNotice(el, msg, type) { // Función
+    if (!el) return; // Condición
+    el.textContent = msg; // Fija el texto del elemento
+    el.className   = `notice-inline is-${type}`; // Asigna un valor
   }
 
-  function setupComposer() {
-    document.querySelector('[data-open-composer]')?.addEventListener('click', () => toggleComposer());
-    document.querySelector('[data-close-composer]')?.addEventListener('click', () => {
-      document.querySelector('[data-composer-panel]')?.classList.add('hidden');
+  function setupComposer() { // Función
+    document.querySelector('[data-open-composer]')?.addEventListener('click', () => toggleComposer()); // Escucha un evento
+    document.querySelector('[data-close-composer]')?.addEventListener('click', () => { // Escucha un evento
+      document.querySelector('[data-composer-panel]')?.classList.add('hidden'); // Busca elemento(s) en el DOM
     });
 
-    const form = document.querySelector('[data-post-form]');
-    if (!form) return;
+    const form = document.querySelector('[data-post-form]'); // Declara una variable
+    if (!form) return; // Condición
 
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      const notice = form.querySelector('[data-post-notice]');
-      const user   = getUser();
-      if (!user) { window.location.href = 'login.php'; return; }
+    form.addEventListener('submit', async e => { // Escucha un evento
+      e.preventDefault(); // Cancela el comportamiento por defecto
+      const notice = form.querySelector('[data-post-notice]'); // Declara una variable
+      const user   = getUser(); // Declara una variable
+      if (!user) { window.location.href = 'login.php'; return; } // Condición
 
-      const fd = new FormData(form);
-      const payload = {
-        title:    String(fd.get('title')   || '').trim(),
-        content:  String(fd.get('content') || '').trim(),
-        category: String(fd.get('category')|| 'fps')
+      const fd = new FormData(form); // Declara una variable
+      const payload = { // Declara una variable
+        title:    String(fd.get('title')   || '').trim(), // Instrucción
+        content:  String(fd.get('content') || '').trim(), // Instrucción
+        category: String(fd.get('category')|| 'fps') // Instrucción
       };
 
-      if (payload.title.length < 6) {
-        setNotice(notice, 'El título debe tener al menos 6 caracteres.', 'error');
-        return;
+      if (payload.title.length < 6) { // Condición
+        setNotice(notice, 'El título debe tener al menos 6 caracteres.', 'error'); // Llama a una función
+        return; // Devuelve el resultado
       }
-      if (payload.content.length < 12) {
-        setNotice(notice, 'El contenido debe tener al menos 12 caracteres.', 'error');
-        return;
+      if (payload.content.length < 12) { // Condición
+        setNotice(notice, 'El contenido debe tener al menos 12 caracteres.', 'error'); // Llama a una función
+        return; // Devuelve el resultado
       }
 
-      const submitBtn = form.querySelector('[type="submit"]');
-      submitBtn.disabled    = true;
-      submitBtn.textContent = 'Publicando…';
+      const submitBtn = form.querySelector('[type="submit"]'); // Declara una variable
+      submitBtn.disabled    = true; // Asigna un valor
+      submitBtn.textContent = 'Publicando…'; // Fija el texto del elemento
 
-      const res = await api('add_post', 'POST', payload);
-      submitBtn.disabled    = false;
-      submitBtn.textContent = 'Publicar tema';
+      const res = await api('add_post', 'POST', payload); // Declara una variable
+      submitBtn.disabled    = false; // Asigna un valor
+      submitBtn.textContent = 'Publicar tema'; // Fija el texto del elemento
 
-      if (res?.success) {
-        form.reset();
-        const msg = user.role === 'admin'
-          ? '✦ Tema publicado correctamente.'
-          : '⏳ Tema enviado — pendiente de aprobación.';
-        setNotice(notice, msg, 'success');
-        toast(user.role === 'admin' ? 'Tema publicado' : 'Enviado — pendiente de aprobación', 'success');
-        renderPosts();
-        updateStats();
-        setTimeout(() => { notice.className = 'notice-inline'; notice.textContent = ''; }, 5000);
-      } else {
-        setNotice(notice, res?.error || 'No se pudo publicar el tema.', 'error');
+      if (res?.success) { // Condición
+        form.reset(); // Llama a una función
+        const msg = user.role === 'admin' // Declara una variable
+          ? 'Tema publicado correctamente.' // Instrucción
+          : 'Tema enviado — pendiente de aprobación.'; // Instrucción
+        setNotice(notice, msg, 'success'); // Llama a una función
+        toast(user.role === 'admin' ? 'Tema publicado' : 'Enviado — pendiente de aprobación', 'success'); // Muestra una notificación
+        renderPosts(); // Llama a una función
+        updateStats(); // Llama a una función
+        setTimeout(() => { notice.className = 'notice-inline'; notice.textContent = ''; }, 5000); // Fija el texto del elemento
+      } else { // Instrucción
+        setNotice(notice, res?.error || 'No se pudo publicar el tema.', 'error'); // Llama a una función
       }
     });
   }
@@ -711,70 +715,70 @@
      CATEGORY FILTERS
   ═══════════════════════════════════════════════════════════ */
 
-  function setupFilters() {
-    document.querySelectorAll('[data-category-filters] .cat-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-category-filters] .cat-btn').forEach(b => b.classList.remove('is-active'));
-        btn.classList.add('is-active');
-        renderPosts();
+  function setupFilters() { // Función
+    document.querySelectorAll('[data-category-filters] .cat-btn').forEach(btn => { // Busca elemento(s) en el DOM
+      btn.addEventListener('click', () => { // Escucha un evento
+        document.querySelectorAll('[data-category-filters] .cat-btn').forEach(b => b.classList.remove('is-active')); // Busca elemento(s) en el DOM
+        btn.classList.add('is-active'); // Cambia clases CSS
+        renderPosts(); // Llama a una función
       });
     });
-    document.querySelector('[data-search-input]')?.addEventListener('input', renderPosts);
-    document.querySelector('[data-sort-select]')?.addEventListener('change', renderPosts);
+    document.querySelector('[data-search-input]')?.addEventListener('input', renderPosts); // Escucha un evento
+    document.querySelector('[data-sort-select]')?.addEventListener('change', renderPosts); // Escucha un evento
   }
 
   /* ═══════════════════════════════════════════════════════════
      CONTACT FORM
   ═══════════════════════════════════════════════════════════ */
 
-  function setupContactForm() {
-    const form = document.querySelector('[data-contact-form]');
-    if (!form) return;
+  function setupContactForm() { // Función
+    const form = document.querySelector('[data-contact-form]'); // Declara una variable
+    if (!form) return; // Condición
 
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      const notice = form.querySelector('[data-contact-notice]');
-      const fd     = new FormData(form);
-      const name    = String(fd.get('name')    || '').trim();
-      const email   = String(fd.get('email')   || '').trim();
-      const subject = String(fd.get('subject') || '').trim();
-      const message = String(fd.get('message') || '').trim();
+    form.addEventListener('submit', async e => { // Escucha un evento
+      e.preventDefault(); // Cancela el comportamiento por defecto
+      const notice = form.querySelector('[data-contact-notice]'); // Declara una variable
+      const fd     = new FormData(form); // Declara una variable
+      const name    = String(fd.get('name')    || '').trim(); // Declara una variable
+      const email   = String(fd.get('email')   || '').trim(); // Declara una variable
+      const subject = String(fd.get('subject') || '').trim(); // Declara una variable
+      const message = String(fd.get('message') || '').trim(); // Declara una variable
 
-      if (!name || !email || !subject || !message) {
-        setNotice(notice, 'Por favor, completa todos los campos.', 'error');
-        return;
+      if (!name || !email || !subject || !message) { // Condición
+        setNotice(notice, 'Por favor, completa todos los campos.', 'error'); // Llama a una función
+        return; // Devuelve el resultado
       }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setNotice(notice, 'Introduce un email válido.', 'error');
-        return;
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { // Condición
+        setNotice(notice, 'Introduce un email válido.', 'error'); // Llama a una función
+        return; // Devuelve el resultado
       }
 
-      const submitBtn = form.querySelector('[type="submit"]');
-      submitBtn.disabled    = true;
-      submitBtn.textContent = 'Enviando…';
+      const submitBtn = form.querySelector('[type="submit"]'); // Declara una variable
+      submitBtn.disabled    = true; // Asigna un valor
+      submitBtn.textContent = 'Enviando…'; // Fija el texto del elemento
 
-      try {
-        const res  = await fetch('process_contact.php', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body:    new URLSearchParams({ name, email, subject, message })
+      try { // Instrucción
+        const res  = await fetch('process_contact.php', { // Declara una variable
+          method:  'POST', // Instrucción
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, // Instrucción
+          body:    new URLSearchParams({ name, email, subject, message }) // Instrucción
         });
-        const data = await res.json();
-        submitBtn.disabled    = false;
-        submitBtn.textContent = 'Enviar mensaje';
+        const data = await res.json(); // Declara una variable
+        submitBtn.disabled    = false; // Asigna un valor
+        submitBtn.textContent = 'Enviar mensaje'; // Fija el texto del elemento
 
-        if (data.success) {
-          form.reset();
-          setNotice(notice, '✦ ¡Mensaje recibido! Te responderemos pronto.', 'success');
-          toast('Mensaje enviado — guardado en base de datos', 'success');
-          setTimeout(() => { notice.className = 'notice-inline'; notice.textContent = ''; }, 6000);
-        } else {
-          setNotice(notice, data.error || 'No se pudo enviar el mensaje.', 'error');
+        if (data.success) { // Condición
+          form.reset(); // Llama a una función
+          setNotice(notice, '¡Mensaje recibido! Te responderemos pronto.', 'success'); // Llama a una función
+          toast('Mensaje enviado — guardado en base de datos', 'success'); // Muestra una notificación
+          setTimeout(() => { notice.className = 'notice-inline'; notice.textContent = ''; }, 6000); // Fija el texto del elemento
+        } else { // Instrucción
+          setNotice(notice, data.error || 'No se pudo enviar el mensaje.', 'error'); // Llama a una función
         }
-      } catch {
-        submitBtn.disabled    = false;
-        submitBtn.textContent = 'Enviar mensaje';
-        setNotice(notice, 'Error de conexión. Inténtalo de nuevo.', 'error');
+      } catch { // Instrucción
+        submitBtn.disabled    = false; // Asigna un valor
+        submitBtn.textContent = 'Enviar mensaje'; // Fija el texto del elemento
+        setNotice(notice, 'Error de conexión. Inténtalo de nuevo.', 'error'); // Llama a una función
       }
     });
   }
@@ -783,41 +787,41 @@
      MEMBERS SECTION (public list on index page)
   ═══════════════════════════════════════════════════════════ */
 
-  async function renderMembersList() {
-    const wrap = document.querySelector('[data-members-list]');
-    if (!wrap) return;
+  async function renderMembersList() { // Función
+    const wrap = document.querySelector('[data-members-list]'); // Declara una variable
+    if (!wrap) return; // Condición
 
-    const users = await api('get_users');
-    if (!Array.isArray(users) || !users.length) return;
+    const users = await api('get_users'); // Declara una variable
+    if (!Array.isArray(users) || !users.length) return; // Condición
 
     wrap.innerHTML = users.slice(0, 12).map(u => `
       <div class="member-card reveal-on-scroll">
         <span class="avatar ava-lg" style="${avatarStyle(u.username)}">${avatarInitial(u.username)}</span>
         <div class="member-card-info">
           <strong class="member-card-name">${esc(u.username)}</strong>
-          <span class="member-card-game">🎮 ${esc(u.favorite_game || 'Gaming')}</span>
+          <span class="member-card-game">${esc(u.favorite_game || 'Gaming')}</span>
           ${u.bio ? `<p class="member-card-bio">${esc(u.bio)}</p>` : ''}
         </div>
         <span class="badge ${u.role === 'admin' ? 'badge-admin' : 'badge-member'}">${u.role === 'admin' ? 'Admin' : 'Miembro'}</span>
       </div>
-    `).join('');
+    `).join(''); // Instrucción
 
-    setupScrollReveal();
+    setupScrollReveal(); // Llama a una función
   }
 
-  async function renderAdminPosts() {
-    const c   = document.querySelector('[data-admin-posts]');
-    const cnt = document.querySelector('[data-posts-count]');
-    if (!c) return;
+  async function renderAdminPosts() { // Función
+    const c   = document.querySelector('[data-admin-posts]'); // Declara una variable
+    const cnt = document.querySelector('[data-posts-count]'); // Declara una variable
+    if (!c) return; // Condición
 
-    const result = await api('get_all_posts');
-    const posts  = Array.isArray(result) ? result : (result?.data ?? []);
-    if (!posts.length) {
-      c.innerHTML = '<div style="padding:20px 18px;color:var(--white-faint);font-size:0.86rem;font-family:var(--font-ui);">No hay temas todavía.</div>';
-      return;
+    const result = await api('get_all_posts'); // Declara una variable
+    const posts  = Array.isArray(result) ? result : (result?.data ?? []); // Declara una variable
+    if (!posts.length) { // Condición
+      c.innerHTML = '<div style="padding:20px 18px;color:var(--white-faint);font-size:0.86rem;font-family:var(--font-ui);">No hay temas todavía.</div>'; // Inyecta HTML en el elemento
+      return; // Devuelve el resultado
     }
 
-    if (cnt) cnt.textContent = `${posts.length} temas`;
+    if (cnt) cnt.textContent = `${posts.length} temas`; // Condición
 
     c.innerHTML = posts.map(p => `
       <div class="admin-row">
@@ -838,49 +842,49 @@
           <button class="btn btn-danger btn-sm" data-delete-post="${p.id}">Eliminar</button>
         </div>
       </div>
-    `).join('');
+    `).join(''); // Instrucción
 
-    c.querySelectorAll('[data-approve-post]').forEach(btn =>
-      btn.addEventListener('click', async () => {
-        await api('approve_post', 'POST', { post_id: parseInt(btn.dataset.approvePost), approved: 1 });
-        toast('Tema aprobado — visible en el foro', 'success');
-        renderAdminPosts(); updateAdminMetrics();
-      })
-    );
-    c.querySelectorAll('[data-reject-post]').forEach(btn =>
-      btn.addEventListener('click', async () => {
-        await api('approve_post', 'POST', { post_id: parseInt(btn.dataset.rejectPost), approved: 0 });
-        toast('Tema rechazado', 'info');
-        renderAdminPosts(); updateAdminMetrics();
-      })
-    );
-    c.querySelectorAll('[data-delete-post]').forEach(btn =>
-      btn.addEventListener('click', async () => {
-        if (!confirm('¿Eliminar este tema definitivamente?')) return;
-        await api('delete_post', 'POST', { post_id: parseInt(btn.dataset.deletePost) });
-        toast('Tema eliminado', 'error');
-        renderAdminPosts(); updateAdminMetrics();
-      })
-    );
+    c.querySelectorAll('[data-approve-post]').forEach(btn => // Busca elemento(s) en el DOM
+      btn.addEventListener('click', async () => { // Escucha un evento
+        await api('approve_post', 'POST', { post_id: parseInt(btn.dataset.approvePost), approved: 1 }); // Llama a la API y espera la respuesta
+        toast('Tema aprobado — visible en el foro', 'success'); // Muestra una notificación
+        renderAdminPosts(); updateAdminMetrics(); // Llama a una función
+      }) // Instrucción
+    ); // Instrucción
+    c.querySelectorAll('[data-reject-post]').forEach(btn => // Busca elemento(s) en el DOM
+      btn.addEventListener('click', async () => { // Escucha un evento
+        await api('approve_post', 'POST', { post_id: parseInt(btn.dataset.rejectPost), approved: 0 }); // Llama a la API y espera la respuesta
+        toast('Tema rechazado', 'info'); // Muestra una notificación
+        renderAdminPosts(); updateAdminMetrics(); // Llama a una función
+      }) // Instrucción
+    ); // Instrucción
+    c.querySelectorAll('[data-delete-post]').forEach(btn => // Busca elemento(s) en el DOM
+      btn.addEventListener('click', async () => { // Escucha un evento
+        if (!confirm('¿Eliminar este tema definitivamente?')) return; // Condición
+        await api('delete_post', 'POST', { post_id: parseInt(btn.dataset.deletePost) }); // Llama a la API y espera la respuesta
+        toast('Tema eliminado', 'error'); // Muestra una notificación
+        renderAdminPosts(); updateAdminMetrics(); // Llama a una función
+      }) // Instrucción
+    ); // Instrucción
   }
 
   /* ═══════════════════════════════════════════════════════════
      LEADERBOARD — extended with API leaderboard endpoint
   ═══════════════════════════════════════════════════════════ */
 
-  async function renderLeaderboardExtended() {
-    const list = document.querySelector('[data-user-list]');
-    if (!list) return;
+  async function renderLeaderboardExtended() { // Función
+    const list = document.querySelector('[data-user-list]'); // Declara una variable
+    if (!list) return; // Condición
 
-    const data = await api('get_leaderboard', 'GET', null, { limit: 5 });
-    const rows = Array.isArray(data) ? data : [];
+    const data = await api('get_leaderboard', 'GET', null, { limit: 5 }); // Declara una variable
+    const rows = Array.isArray(data) ? data : []; // Declara una variable
 
-    if (!rows.length) {
-      list.innerHTML = '<p style="font-size:0.82rem;color:var(--white-faint);padding:4px 0;">Sin datos aún.</p>';
-      return;
+    if (!rows.length) { // Condición
+      list.innerHTML = '<p style="font-size:0.82rem;color:var(--white-faint);padding:4px 0;">Sin datos aún.</p>'; // Inyecta HTML en el elemento
+      return; // Devuelve el resultado
     }
 
-    const rankClass = i => i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : '';
+    const rankClass = i => i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : ''; // Función flecha
 
     list.innerHTML = rows.map((u, i) => `
       <div class="leader-row">
@@ -890,36 +894,36 @@
           <div class="leader-name">${esc(u.username)}</div>
           <div class="leader-sub">${u.post_count} tema${u.post_count !== 1 ? 's' : ''}</div>
         </div>
-        <span class="leader-badge">♥ ${fmtNumber(u.total_likes)}</span>
+        <span class="leader-badge">${fmtNumber(u.total_likes)} likes</span>
       </div>
-    `).join('');
+    `).join(''); // Instrucción
   }
 
   /* ═══════════════════════════════════════════════════════════
      SEARCH — debounced live search
   ═══════════════════════════════════════════════════════════ */
 
-  let searchTimer = null;
+  let searchTimer = null; // Declara una variable
 
-  function debounce(fn, delay) {
-    return function (...args) {
-      clearTimeout(searchTimer);
-      searchTimer = setTimeout(() => fn.apply(this, args), delay);
+  function debounce(fn, delay) { // Función
+    return function (...args) { // Devuelve el resultado
+      clearTimeout(searchTimer); // Llama a una función
+      searchTimer = setTimeout(() => fn.apply(this, args), delay); // Temporizador
     };
   }
 
-  function setupSearchDebounce() {
-    const input = document.querySelector('[data-search-input]');
-    if (!input) return;
-    const debouncedRender = debounce(renderPosts, 380);
-    input.removeEventListener('input', renderPosts);
-    input.addEventListener('input', debouncedRender);
+  function setupSearchDebounce() { // Función
+    const input = document.querySelector('[data-search-input]'); // Declara una variable
+    if (!input) return; // Condición
+    const debouncedRender = debounce(renderPosts, 380); // Declara una variable
+    input.removeEventListener('input', renderPosts); // Llama a una función
+    input.addEventListener('input', debouncedRender); // Escucha un evento
 
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Escape') {
-        input.value = '';
-        renderPosts();
-        input.blur();
+    input.addEventListener('keydown', e => { // Escucha un evento
+      if (e.key === 'Escape') { // Condición
+        input.value = ''; // Asigna un valor
+        renderPosts(); // Llama a una función
+        input.blur(); // Llama a una función
       }
     });
   }
@@ -928,20 +932,20 @@
      CHAR COUNTER — textarea live counter
   ═══════════════════════════════════════════════════════════ */
 
-  function setupCharCounters() {
-    document.querySelectorAll('[data-char-counter]').forEach(wrap => {
-      const textarea = wrap.querySelector('textarea, input');
-      const counter  = wrap.querySelector('[data-char-count-display]');
-      if (!textarea || !counter) return;
-      const max = parseInt(textarea.getAttribute('maxlength') || '0', 10);
-      const update = () => {
-        const len = textarea.value.length;
-        counter.textContent = max ? `${len} / ${max}` : String(len);
-        counter.classList.toggle('is-near-limit', max > 0 && len >= max * 0.85);
-        counter.classList.toggle('is-over-limit',  max > 0 && len >= max);
+  function setupCharCounters() { // Función
+    document.querySelectorAll('[data-char-counter]').forEach(wrap => { // Busca elemento(s) en el DOM
+      const textarea = wrap.querySelector('textarea, input'); // Declara una variable
+      const counter  = wrap.querySelector('[data-char-count-display]'); // Declara una variable
+      if (!textarea || !counter) return; // Condición
+      const max = parseInt(textarea.getAttribute('maxlength') || '0', 10); // Declara una variable
+      const update = () => { // Función flecha
+        const len = textarea.value.length; // Declara una variable
+        counter.textContent = max ? `${len} / ${max}` : String(len); // Fija el texto del elemento
+        counter.classList.toggle('is-near-limit', max > 0 && len >= max * 0.85); // Cambia clases CSS
+        counter.classList.toggle('is-over-limit',  max > 0 && len >= max); // Cambia clases CSS
       };
-      textarea.addEventListener('input', update);
-      update();
+      textarea.addEventListener('input', update); // Escucha un evento
+      update(); // Llama a una función
     });
   }
 
@@ -949,15 +953,15 @@
      BACK TO TOP BUTTON
   ═══════════════════════════════════════════════════════════ */
 
-  function setupBackToTop() {
-    const btn = document.querySelector('[data-back-to-top]');
-    if (!btn) return;
-    const toggleVisibility = () => {
-      btn.classList.toggle('is-visible', window.scrollY > 400);
+  function setupBackToTop() { // Función
+    const btn = document.querySelector('[data-back-to-top]'); // Declara una variable
+    if (!btn) return; // Condición
+    const toggleVisibility = () => { // Función flecha
+      btn.classList.toggle('is-visible', window.scrollY > 400); // Cambia clases CSS
     };
-    window.addEventListener('scroll', toggleVisibility, { passive: true });
-    btn.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.addEventListener('scroll', toggleVisibility, { passive: true }); // Escucha un evento
+    btn.addEventListener('click', () => { // Escucha un evento
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // Llama a una función
     });
   }
 
@@ -965,43 +969,43 @@
      STICKY HEADER — hide on scroll down, show on scroll up
   ═══════════════════════════════════════════════════════════ */
 
-  function setupStickyHeader() {
-    const header = document.querySelector('.site-header');
-    if (!header) return;
-    let lastScroll = 0;
-    let ticking    = false;
+  function setupStickyHeader() { // Función
+    const header = document.querySelector('.site-header'); // Declara una variable
+    if (!header) return; // Condición
+    let lastScroll = 0; // Declara una variable
+    let ticking    = false; // Declara una variable
 
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const cur = window.scrollY;
-          if (cur > lastScroll && cur > 120) {
-            header.classList.add('header-hidden');
-          } else {
-            header.classList.remove('header-hidden');
+    window.addEventListener('scroll', () => { // Escucha un evento
+      if (!ticking) { // Condición
+        requestAnimationFrame(() => { // Función de callback
+          const cur = window.scrollY; // Declara una variable
+          if (cur > lastScroll && cur > 120) { // Condición
+            header.classList.add('header-hidden'); // Cambia clases CSS
+          } else { // Instrucción
+            header.classList.remove('header-hidden'); // Cambia clases CSS
           }
-          lastScroll = cur;
-          ticking    = false;
+          lastScroll = cur; // Asigna un valor
+          ticking    = false; // Asigna un valor
         });
-        ticking = true;
+        ticking = true; // Asigna un valor
       }
-    }, { passive: true });
+    }, { passive: true }); // Instrucción
   }
 
   /* ═══════════════════════════════════════════════════════════
      SMOOTH SCROLL — anchor links (#section)
   ═══════════════════════════════════════════════════════════ */
 
-  function setupSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(link => {
-      link.addEventListener('click', e => {
-        const id = link.getAttribute('href').slice(1);
-        if (!id) return;
-        const target = document.getElementById(id);
-        if (!target) return;
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        history.replaceState(null, '', `#${id}`);
+  function setupSmoothScroll() { // Función
+    document.querySelectorAll('a[href^="#"]').forEach(link => { // Busca elemento(s) en el DOM
+      link.addEventListener('click', e => { // Escucha un evento
+        const id = link.getAttribute('href').slice(1); // Declara una variable
+        if (!id) return; // Condición
+        const target = document.getElementById(id); // Declara una variable
+        if (!target) return; // Condición
+        e.preventDefault(); // Cancela el comportamiento por defecto
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' }); // Llama a una función
+        history.replaceState(null, '', `#${id}`); // Llama a una función
       });
     });
   }
@@ -1010,46 +1014,46 @@
      KEYBOARD SHORTCUTS
   ═══════════════════════════════════════════════════════════ */
 
-  function setupKeyboardShortcuts() {
-    document.addEventListener('keydown', e => {
-      const tag = document.activeElement?.tagName?.toLowerCase();
-      const inInput = ['input', 'textarea', 'select'].includes(tag);
+  function setupKeyboardShortcuts() { // Función
+    document.addEventListener('keydown', e => { // Escucha un evento
+      const tag = document.activeElement?.tagName?.toLowerCase(); // Declara una variable
+      const inInput = ['input', 'textarea', 'select'].includes(tag); // Declara una variable
 
       /* Ctrl/Cmd + K → focus search */
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        const searchEl = document.querySelector('[data-search-input]');
-        if (searchEl) { searchEl.focus(); searchEl.select(); }
-        return;
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') { // Condición
+        e.preventDefault(); // Cancela el comportamiento por defecto
+        const searchEl = document.querySelector('[data-search-input]'); // Declara una variable
+        if (searchEl) { searchEl.focus(); searchEl.select(); } // Condición
+        return; // Devuelve el resultado
       }
 
       /* Escape → close any open panels / composer */
-      if (e.key === 'Escape' && !inInput) {
-        document.querySelector('[data-composer-panel]:not(.hidden)')?.classList.add('hidden');
-        document.querySelector('.modal-overlay.is-open')?.classList.remove('is-open');
-        return;
+      if (e.key === 'Escape' && !inInput) { // Condición
+        document.querySelector('[data-composer-panel]:not(.hidden)')?.classList.add('hidden'); // Busca elemento(s) en el DOM
+        document.querySelector('.modal-overlay.is-open')?.classList.remove('is-open'); // Busca elemento(s) en el DOM
+        return; // Devuelve el resultado
       }
 
       /* N → open composer (not in input) */
-      if (e.key === 'n' && !inInput && !e.ctrlKey && !e.metaKey) {
-        const page = document.body.dataset.page;
-        if (page === 'home') {
-          toggleComposer();
+      if (e.key === 'n' && !inInput && !e.ctrlKey && !e.metaKey) { // Condición
+        const page = document.body.dataset.page; // Declara una variable
+        if (page === 'home') { // Condición
+          toggleComposer(); // Llama a una función
         }
-        return;
+        return; // Devuelve el resultado
       }
 
       /* T → back to top */
-      if (e.key === 't' && !inInput && !e.ctrlKey && !e.metaKey) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
+      if (e.key === 't' && !inInput && !e.ctrlKey && !e.metaKey) { // Condición
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Llama a una función
+        return; // Devuelve el resultado
       }
 
       /* F → focus search */
-      if (e.key === 'f' && !inInput && !e.ctrlKey && !e.metaKey) {
-        const searchEl = document.querySelector('[data-search-input]');
-        if (searchEl) { searchEl.focus(); e.preventDefault(); }
-        return;
+      if (e.key === 'f' && !inInput && !e.ctrlKey && !e.metaKey) { // Condición
+        const searchEl = document.querySelector('[data-search-input]'); // Declara una variable
+        if (searchEl) { searchEl.focus(); e.preventDefault(); } // Condición
+        return; // Devuelve el resultado
       }
     });
   }
@@ -1058,66 +1062,66 @@
      LOCAL STORAGE PREFERENCES
   ═══════════════════════════════════════════════════════════ */
 
-  const PREFS_KEY = 'nexus_prefs_v1';
+  const PREFS_KEY = 'nexus_prefs_v1'; // Declara una variable
 
-  function loadPrefs() {
-    try {
-      return JSON.parse(localStorage.getItem(PREFS_KEY) || '{}');
-    } catch {
-      return {};
+  function loadPrefs() { // Función
+    try { // Instrucción
+      return JSON.parse(localStorage.getItem(PREFS_KEY) || '{}'); // Devuelve el resultado
+    } catch { // Instrucción
+      return {}; // Devuelve el resultado
     }
   }
 
-  function savePrefs(delta) {
-    try {
-      const prefs = { ...loadPrefs(), ...delta };
-      localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+  function savePrefs(delta) { // Función
+    try { // Instrucción
+      const prefs = { ...loadPrefs(), ...delta }; // Declara una variable
+      localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); // Llama a una función
     } catch { /* storage unavailable */ }
   }
 
-  function applyPrefs() {
-    const prefs = loadPrefs();
+  function applyPrefs() { // Función
+    const prefs = loadPrefs(); // Declara una variable
 
     /* Restore last selected category */
-    if (prefs.category) {
-      const btn = document.querySelector(`[data-category-filters] [data-category="${prefs.category}"]`);
-      if (btn) {
-        document.querySelectorAll('[data-category-filters] .cat-btn').forEach(b => b.classList.remove('is-active'));
-        btn.classList.add('is-active');
+    if (prefs.category) { // Condición
+      const btn = document.querySelector(`[data-category-filters] [data-category="${prefs.category}"]`); // Declara una variable
+      if (btn) { // Condición
+        document.querySelectorAll('[data-category-filters] .cat-btn').forEach(b => b.classList.remove('is-active')); // Busca elemento(s) en el DOM
+        btn.classList.add('is-active'); // Cambia clases CSS
       }
     }
 
     /* Restore last selected sort */
-    const sortEl = document.querySelector('[data-sort-select]');
-    if (sortEl && prefs.sort) sortEl.value = prefs.sort;
+    const sortEl = document.querySelector('[data-sort-select]'); // Declara una variable
+    if (sortEl && prefs.sort) sortEl.value = prefs.sort; // Condición
   }
 
-  function persistFilterPrefs() {
-    document.querySelectorAll('[data-category-filters] .cat-btn').forEach(btn => {
-      btn.addEventListener('click', () => savePrefs({ category: btn.dataset.category }));
+  function persistFilterPrefs() { // Función
+    document.querySelectorAll('[data-category-filters] .cat-btn').forEach(btn => { // Busca elemento(s) en el DOM
+      btn.addEventListener('click', () => savePrefs({ category: btn.dataset.category })); // Escucha un evento
     });
-    const sortEl = document.querySelector('[data-sort-select]');
-    if (sortEl) sortEl.addEventListener('change', () => savePrefs({ sort: sortEl.value }));
+    const sortEl = document.querySelector('[data-sort-select]'); // Declara una variable
+    if (sortEl) sortEl.addEventListener('change', () => savePrefs({ sort: sortEl.value })); // Condición
   }
 
   /* ═══════════════════════════════════════════════════════════
      ADMIN — delete contact messages
   ═══════════════════════════════════════════════════════════ */
 
-  async function renderAdminContactsExtended() {
-    const c   = document.querySelector('[data-admin-contacts-list]');
-    const cnt = document.querySelector('[data-contacts-count]');
-    if (!c) return;
+  async function renderAdminContactsExtended() { // Función
+    const c   = document.querySelector('[data-admin-contacts-list]'); // Declara una variable
+    const cnt = document.querySelector('[data-contacts-count]'); // Declara una variable
+    if (!c) return; // Condición
 
-    const result = await api('get_contacts');
-    const contacts = Array.isArray(result) ? result : (result?.data ?? []);
+    const result = await api('get_contacts'); // Declara una variable
+    const contacts = Array.isArray(result) ? result : (result?.data ?? []); // Declara una variable
 
-    if (!contacts.length) {
-      c.innerHTML = '<div style="padding:20px 18px;color:var(--white-faint);font-size:0.86rem;font-family:var(--font-ui);">No hay mensajes de contacto.</div>';
-      return;
+    if (!contacts.length) { // Condición
+      c.innerHTML = '<div style="padding:20px 18px;color:var(--white-faint);font-size:0.86rem;font-family:var(--font-ui);">No hay mensajes de contacto.</div>'; // Inyecta HTML en el elemento
+      return; // Devuelve el resultado
     }
 
-    if (cnt) cnt.textContent = `${contacts.length} mensajes`;
+    if (cnt) cnt.textContent = `${contacts.length} mensajes`; // Condición
 
     c.innerHTML = contacts.map(ct => `
       <div class="admin-row" data-contact-row="${ct.id}">
@@ -1138,56 +1142,56 @@
           <button class="btn btn-danger btn-sm" data-delete-contact="${ct.id}">Eliminar</button>
         </div>
       </div>
-    `).join('');
+    `).join(''); // Instrucción
 
-    c.querySelectorAll('[data-read-contact]').forEach(btn =>
-      btn.addEventListener('click', async () => {
-        await api('mark_contact_read', 'POST', { contact_id: parseInt(btn.dataset.readContact) });
-        toast('Mensaje marcado como leído', 'info');
-        renderAdminContactsExtended();
-        updateAdminMetrics();
-      })
-    );
+    c.querySelectorAll('[data-read-contact]').forEach(btn => // Busca elemento(s) en el DOM
+      btn.addEventListener('click', async () => { // Escucha un evento
+        await api('mark_contact_read', 'POST', { contact_id: parseInt(btn.dataset.readContact) }); // Llama a la API y espera la respuesta
+        toast('Mensaje marcado como leído', 'info'); // Muestra una notificación
+        renderAdminContactsExtended(); // Llama a una función
+        updateAdminMetrics(); // Llama a una función
+      }) // Instrucción
+    ); // Instrucción
 
-    c.querySelectorAll('[data-delete-contact]').forEach(btn =>
-      btn.addEventListener('click', async () => {
-        if (!confirm('¿Eliminar este mensaje de contacto definitivamente?')) return;
-        const row = c.querySelector(`[data-contact-row="${btn.dataset.deleteContact}"]`);
-        if (row) { row.style.opacity = '0.4'; row.style.pointerEvents = 'none'; }
-        const res = await api('delete_contact', 'POST', { contact_id: parseInt(btn.dataset.deleteContact) });
-        if (res?.success) {
-          toast('Mensaje eliminado', 'error');
-          renderAdminContactsExtended();
-          updateAdminMetrics();
-        } else {
-          if (row) { row.style.opacity = ''; row.style.pointerEvents = ''; }
-          toast('Error al eliminar', 'error');
+    c.querySelectorAll('[data-delete-contact]').forEach(btn => // Busca elemento(s) en el DOM
+      btn.addEventListener('click', async () => { // Escucha un evento
+        if (!confirm('¿Eliminar este mensaje de contacto definitivamente?')) return; // Condición
+        const row = c.querySelector(`[data-contact-row="${btn.dataset.deleteContact}"]`); // Declara una variable
+        if (row) { row.style.opacity = '0.4'; row.style.pointerEvents = 'none'; } // Condición
+        const res = await api('delete_contact', 'POST', { contact_id: parseInt(btn.dataset.deleteContact) }); // Declara una variable
+        if (res?.success) { // Condición
+          toast('Mensaje eliminado', 'error'); // Muestra una notificación
+          renderAdminContactsExtended(); // Llama a una función
+          updateAdminMetrics(); // Llama a una función
+        } else { // Instrucción
+          if (row) { row.style.opacity = ''; row.style.pointerEvents = ''; } // Condición
+          toast('Error al eliminar', 'error'); // Muestra una notificación
         }
-      })
-    );
+      }) // Instrucción
+    ); // Instrucción
   }
 
   /* ═══════════════════════════════════════════════════════════
      ADMIN — user role management
   ═══════════════════════════════════════════════════════════ */
 
-  async function renderAdminUsersExtended() {
-    const c   = document.querySelector('[data-admin-users-list]');
-    const cnt = document.querySelector('[data-users-count]');
-    if (!c) return;
+  async function renderAdminUsersExtended() { // Función
+    const c   = document.querySelector('[data-admin-users-list]'); // Declara una variable
+    const cnt = document.querySelector('[data-users-count]'); // Declara una variable
+    if (!c) return; // Condición
 
-    const users = await api('get_users');
-    if (!Array.isArray(users) || !users.length) {
-      c.innerHTML = '<div style="padding:20px 18px;color:var(--white-faint);font-size:0.86rem;font-family:var(--font-ui);">Sin usuarios.</div>';
-      return;
+    const users = await api('get_users'); // Declara una variable
+    if (!Array.isArray(users) || !users.length) { // Condición
+      c.innerHTML = '<div style="padding:20px 18px;color:var(--white-faint);font-size:0.86rem;font-family:var(--font-ui);">Sin usuarios.</div>'; // Inyecta HTML en el elemento
+      return; // Devuelve el resultado
     }
 
-    if (cnt) cnt.textContent = `${users.length} usuarios`;
-    const me = getUser();
+    if (cnt) cnt.textContent = `${users.length} usuarios`; // Condición
+    const me = getUser(); // Declara una variable
 
-    c.innerHTML = users.map(u => {
-      const isSelf  = me && String(me.id) === String(u.id);
-      const isAdmin = u.role === 'admin';
+    c.innerHTML = users.map(u => { // Inyecta HTML en el elemento
+      const isSelf  = me && String(me.id) === String(u.id); // Declara una variable
+      const isAdmin = u.role === 'admin'; // Declara una variable
       return `
         <div class="admin-row" data-user-row="${u.id}">
           <span class="avatar ava-sm" style="${avatarStyle(u.username)}">${avatarInitial(u.username)}</span>
@@ -1197,8 +1201,8 @@
               <span style="color:var(--white-dim);">${esc(u.nombre || u.username)}</span>
               <span style="color:var(--white-ghost);font-size:0.72rem;">${esc(u.email || '')}</span>
               <span class="badge ${isAdmin ? 'badge-admin' : 'badge-member'}">${esc(u.role)}</span>
-              <span style="font-size:0.72rem;color:var(--white-faint);">🎮 ${esc(u.favorite_game || 'Gaming')}</span>
-              <span style="font-size:0.72rem;color:var(--white-faint);">♥ ${fmtNumber(u.total_likes || 0)} likes · ${u.post_count || 0} posts</span>
+              <span style="font-size:0.72rem;color:var(--white-faint);">${esc(u.favorite_game || 'Gaming')}</span>
+              <span style="font-size:0.72rem;color:var(--white-faint);">${fmtNumber(u.total_likes || 0)} likes · ${u.post_count || 0} posts</span>
             </div>
           </div>
           ${!isSelf ? `
@@ -1209,164 +1213,164 @@
             <button class="btn btn-danger btn-sm" data-delete-user="${u.id}">Eliminar</button>
           </div>` : '<span style="font-size:0.75rem;color:var(--white-ghost);padding-right:8px;">(Tú)</span>'}
         </div>
-      `;
-    }).join('');
+      `; // Instrucción
+    }).join(''); // Instrucción
 
-    c.querySelectorAll('[data-promote-user]').forEach(btn =>
-      btn.addEventListener('click', async () => {
-        if (!confirm('¿Promover a este usuario a administrador?')) return;
-        const res = await api('update_user_role', 'POST', { user_id: parseInt(btn.dataset.promoteUser), role: 'admin' });
-        if (res?.success) { toast('Usuario promovido a admin', 'success'); renderAdminUsersExtended(); }
-        else toast(res?.error || 'Error al promover', 'error');
-      })
-    );
+    c.querySelectorAll('[data-promote-user]').forEach(btn => // Busca elemento(s) en el DOM
+      btn.addEventListener('click', async () => { // Escucha un evento
+        if (!confirm('¿Promover a este usuario a administrador?')) return; // Condición
+        const res = await api('update_user_role', 'POST', { user_id: parseInt(btn.dataset.promoteUser), role: 'admin' }); // Declara una variable
+        if (res?.success) { toast('Usuario promovido a admin', 'success'); renderAdminUsersExtended(); } // Condición
+        else toast(res?.error || 'Error al promover', 'error'); // Caso alternativo
+      }) // Instrucción
+    ); // Instrucción
 
-    c.querySelectorAll('[data-demote-user]').forEach(btn =>
-      btn.addEventListener('click', async () => {
-        if (!confirm('¿Degradar a este administrador a miembro?')) return;
-        const res = await api('update_user_role', 'POST', { user_id: parseInt(btn.dataset.demoteUser), role: 'member' });
-        if (res?.success) { toast('Rol actualizado a miembro', 'info'); renderAdminUsersExtended(); }
-        else toast(res?.error || 'Error al degradar', 'error');
-      })
-    );
+    c.querySelectorAll('[data-demote-user]').forEach(btn => // Busca elemento(s) en el DOM
+      btn.addEventListener('click', async () => { // Escucha un evento
+        if (!confirm('¿Degradar a este administrador a miembro?')) return; // Condición
+        const res = await api('update_user_role', 'POST', { user_id: parseInt(btn.dataset.demoteUser), role: 'member' }); // Declara una variable
+        if (res?.success) { toast('Rol actualizado a miembro', 'info'); renderAdminUsersExtended(); } // Condición
+        else toast(res?.error || 'Error al degradar', 'error'); // Caso alternativo
+      }) // Instrucción
+    ); // Instrucción
 
-    c.querySelectorAll('[data-delete-user]').forEach(btn =>
-      btn.addEventListener('click', async () => {
-        if (!confirm('¿Eliminar este usuario y todos sus posts? Esta acción no se puede deshacer.')) return;
-        const row = c.querySelector(`[data-user-row="${btn.dataset.deleteUser}"]`);
-        if (row) { row.style.opacity = '0.4'; row.style.pointerEvents = 'none'; }
-        const res = await api('delete_user', 'POST', { user_id: parseInt(btn.dataset.deleteUser) });
-        if (res?.success) {
-          toast('Usuario eliminado', 'error');
-          renderAdminUsersExtended();
-          updateAdminMetrics();
-        } else {
-          if (row) { row.style.opacity = ''; row.style.pointerEvents = ''; }
-          toast(res?.error || 'Error al eliminar', 'error');
+    c.querySelectorAll('[data-delete-user]').forEach(btn => // Busca elemento(s) en el DOM
+      btn.addEventListener('click', async () => { // Escucha un evento
+        if (!confirm('¿Eliminar este usuario y todos sus posts? Esta acción no se puede deshacer.')) return; // Condición
+        const row = c.querySelector(`[data-user-row="${btn.dataset.deleteUser}"]`); // Declara una variable
+        if (row) { row.style.opacity = '0.4'; row.style.pointerEvents = 'none'; } // Condición
+        const res = await api('delete_user', 'POST', { user_id: parseInt(btn.dataset.deleteUser) }); // Declara una variable
+        if (res?.success) { // Condición
+          toast('Usuario eliminado', 'error'); // Muestra una notificación
+          renderAdminUsersExtended(); // Llama a una función
+          updateAdminMetrics(); // Llama a una función
+        } else { // Instrucción
+          if (row) { row.style.opacity = ''; row.style.pointerEvents = ''; } // Condición
+          toast(res?.error || 'Error al eliminar', 'error'); // Muestra una notificación
         }
-      })
-    );
+      }) // Instrucción
+    ); // Instrucción
   }
 
   /* ═══════════════════════════════════════════════════════════
      ADMIN — update metrics panel
   ═══════════════════════════════════════════════════════════ */
 
-  async function updateAdminMetrics() {
-    const stats = await api('get_stats');
-    if (!stats) return;
-    const s = (sel, v) => {
-      const el = document.querySelector(sel);
-      if (el) el.textContent = fmtNumber(v || 0);
+  async function updateAdminMetrics() { // Función
+    const stats = await api('get_stats'); // Declara una variable
+    if (!stats) return; // Condición
+    const s = (sel, v) => { // Función flecha
+      const el = document.querySelector(sel); // Declara una variable
+      if (el) el.textContent = fmtNumber(v || 0); // Condición
     };
-    s('[data-admin-users]',    stats.users);
-    s('[data-admin-approved]', stats.posts);
-    s('[data-admin-pending]',  stats.pending);
-    s('[data-admin-contacts]', stats.contacts);
-    s('[data-admin-likes]',    stats.likes);
+    s('[data-admin-users]',    stats.users); // Llama a una función
+    s('[data-admin-approved]', stats.posts); // Llama a una función
+    s('[data-admin-pending]',  stats.pending); // Llama a una función
+    s('[data-admin-contacts]', stats.contacts); // Llama a una función
+    s('[data-admin-likes]',    stats.likes); // Llama a una función
   }
 
   /* ═══════════════════════════════════════════════════════════
      ADMIN PAGE — extended version using new render functions
   ═══════════════════════════════════════════════════════════ */
 
-  async function renderAdminPageFull() {
-    const user    = getUser();
-    const blocked = document.querySelector('[data-admin-blocked]');
-    const content = document.querySelector('[data-admin-content]');
+  async function renderAdminPageFull() { // Función
+    const user    = getUser(); // Declara una variable
+    const blocked = document.querySelector('[data-admin-blocked]'); // Declara una variable
+    const content = document.querySelector('[data-admin-content]'); // Declara una variable
 
-    if (!user || user.role !== 'admin') {
-      blocked?.classList.remove('hidden');
-      content?.classList.add('hidden');
-      return;
+    if (!user || user.role !== 'admin') { // Condición
+      blocked?.classList.remove('hidden'); // Cambia clases CSS
+      content?.classList.add('hidden'); // Cambia clases CSS
+      return; // Devuelve el resultado
     }
 
-    content?.classList.remove('hidden');
-    blocked?.classList.add('hidden');
+    content?.classList.remove('hidden'); // Cambia clases CSS
+    blocked?.classList.add('hidden'); // Cambia clases CSS
 
-    initAdminTabs();
-    await updateAdminMetrics();
+    initAdminTabs(); // Llama a una función
+    await updateAdminMetrics(); // Instrucción
   }
 
   /* ═══════════════════════════════════════════════════════════
      ADMIN — tab navigation
   ═══════════════════════════════════════════════════════════ */
-  function initAdminTabs() {
-    const nav = document.querySelector('[data-admin-tab-nav]');
-    if (!nav || nav.dataset.initialized) return;
-    nav.dataset.initialized = 'true';
+  function initAdminTabs() { // Función
+    const nav = document.querySelector('[data-admin-tab-nav]'); // Declara una variable
+    if (!nav || nav.dataset.initialized) return; // Condición
+    nav.dataset.initialized = 'true'; // Asigna un valor
 
-    nav.addEventListener('click', async e => {
-      const btn = e.target.closest('[data-admin-tab]');
-      if (!btn) return;
-      const tab = btn.dataset.adminTab;
+    nav.addEventListener('click', async e => { // Escucha un evento
+      const btn = e.target.closest('[data-admin-tab]'); // Declara una variable
+      if (!btn) return; // Condición
+      const tab = btn.dataset.adminTab; // Declara una variable
 
-      nav.querySelectorAll('[data-admin-tab]').forEach(b => b.classList.remove('is-active'));
-      btn.classList.add('is-active');
+      nav.querySelectorAll('[data-admin-tab]').forEach(b => b.classList.remove('is-active')); // Busca elemento(s) en el DOM
+      btn.classList.add('is-active'); // Cambia clases CSS
 
-      document.querySelectorAll('[data-admin-pane]').forEach(p => {
-        p.classList.toggle('hidden', p.dataset.adminPane !== tab);
+      document.querySelectorAll('[data-admin-pane]').forEach(p => { // Busca elemento(s) en el DOM
+        p.classList.toggle('hidden', p.dataset.adminPane !== tab); // Cambia clases CSS
       });
 
-      if (tab === 'moderation') {
-        await Promise.all([renderAdminPosts(), renderAdminUsersExtended(), renderAdminContactsExtended()]);
+      if (tab === 'moderation') { // Condición
+        await Promise.all([renderAdminPosts(), renderAdminUsersExtended(), renderAdminContactsExtended()]); // Instrucción
       }
-      if (tab === 'users')    initAdminUsersTab();
-      if (tab === 'backups')  initAdminBackupsTab();
-      if (tab === 'danger')   initAdminDangerTab();
+      if (tab === 'users')    initAdminUsersTab(); // Condición
+      if (tab === 'backups')  initAdminBackupsTab(); // Condición
+      if (tab === 'danger')   initAdminDangerTab(); // Condición
     });
   }
 
   /* ═══════════════════════════════════════════════════════════
      ADMIN — full users table with search + filter
   ═══════════════════════════════════════════════════════════ */
-  let _usersCache = [];
+  let _usersCache = []; // Declara una variable
 
-  function initAdminUsersTab() {
-    const pane = document.querySelector('[data-admin-pane="users"]');
-    if (!pane || pane.dataset.initialized) return;
-    pane.dataset.initialized = 'true';
+  function initAdminUsersTab() { // Función
+    const pane = document.querySelector('[data-admin-pane="users"]'); // Declara una variable
+    if (!pane || pane.dataset.initialized) return; // Condición
+    pane.dataset.initialized = 'true'; // Asigna un valor
 
-    let timer;
-    const searchInput = pane.querySelector('[data-user-search]');
-    const roleFilter  = pane.querySelector('[data-user-role-filter]');
+    let timer; // Declara una variable
+    const searchInput = pane.querySelector('[data-user-search]'); // Declara una variable
+    const roleFilter  = pane.querySelector('[data-user-role-filter]'); // Declara una variable
 
-    searchInput?.addEventListener('input', () => {
-      clearTimeout(timer);
-      timer = setTimeout(renderAdminUsersTable, 280);
+    searchInput?.addEventListener('input', () => { // Escucha un evento
+      clearTimeout(timer); // Llama a una función
+      timer = setTimeout(renderAdminUsersTable, 280); // Temporizador
     });
-    roleFilter?.addEventListener('change', renderAdminUsersTable);
+    roleFilter?.addEventListener('change', renderAdminUsersTable); // Escucha un evento
 
-    renderAdminUsersTable();
+    renderAdminUsersTable(); // Llama a una función
   }
 
-  async function renderAdminUsersTable() {
-    const container = document.querySelector('[data-admin-users-table]');
-    if (!container) return;
+  async function renderAdminUsersTable() { // Función
+    const container = document.querySelector('[data-admin-users-table]'); // Declara una variable
+    if (!container) return; // Condición
 
-    if (!_usersCache.length) {
-      container.innerHTML = '<div style="padding:24px 20px;color:var(--white-faint);font-family:var(--font-ui);font-size:0.86rem;">Cargando usuarios…</div>';
-      const res = await api('get_users');
-      _usersCache = Array.isArray(res) ? res : [];
+    if (!_usersCache.length) { // Condición
+      container.innerHTML = '<div style="padding:24px 20px;color:var(--white-faint);font-family:var(--font-ui);font-size:0.86rem;">Cargando usuarios…</div>'; // Inyecta HTML en el elemento
+      const res = await api('get_users'); // Declara una variable
+      _usersCache = Array.isArray(res) ? res : []; // Asigna un valor
     }
 
-    const pane       = document.querySelector('[data-admin-pane="users"]');
-    const searchVal  = (pane?.querySelector('[data-user-search]')?.value || '').toLowerCase();
-    const roleVal    = pane?.querySelector('[data-user-role-filter]')?.value || '';
-    const me         = getUser();
+    const pane       = document.querySelector('[data-admin-pane="users"]'); // Declara una variable
+    const searchVal  = (pane?.querySelector('[data-user-search]')?.value || '').toLowerCase(); // Declara una variable
+    const roleVal    = pane?.querySelector('[data-user-role-filter]')?.value || ''; // Declara una variable
+    const me         = getUser(); // Declara una variable
 
-    const filtered = _usersCache.filter(u => {
-      if (roleVal && u.role !== roleVal) return false;
-      if (searchVal) {
-        const hay = `${u.username} ${u.nombre} ${u.email || ''}`.toLowerCase();
-        if (!hay.includes(searchVal)) return false;
+    const filtered = _usersCache.filter(u => { // Función flecha
+      if (roleVal && u.role !== roleVal) return false; // Condición
+      if (searchVal) { // Condición
+        const hay = `${u.username} ${u.nombre} ${u.email || ''}`.toLowerCase(); // Declara una variable
+        if (!hay.includes(searchVal)) return false; // Condición
       }
-      return true;
+      return true; // Devuelve el resultado
     });
 
-    if (!filtered.length) {
-      container.innerHTML = '<div style="padding:24px 20px;color:var(--white-faint);font-family:var(--font-ui);font-size:0.86rem;">Sin resultados.</div>';
-      return;
+    if (!filtered.length) { // Condición
+      container.innerHTML = '<div style="padding:24px 20px;color:var(--white-faint);font-family:var(--font-ui);font-size:0.86rem;">Sin resultados.</div>'; // Inyecta HTML en el elemento
+      return; // Devuelve el resultado
     }
 
     container.innerHTML = `
@@ -1402,17 +1406,17 @@
                   <td><span class="tbl-game">${esc(u.favorite_game || '—')}</span></td>
                   <td><span class="badge ${isAdmin ? 'badge-admin' : 'badge-member'}">${isAdmin ? 'Admin' : 'Miembro'}</span></td>
                   <td class="tbl-num">${u.post_count || 0}</td>
-                  <td class="tbl-num">♥ ${fmtNumber(u.total_likes || 0)}</td>
+                  <td class="tbl-num">${fmtNumber(u.total_likes || 0)}</td>
                   <td><span class="tbl-date">${fmtDate(u.fecha_registro || '')}</span></td>
                   <td>
                     ${isSelf
                       ? '<span class="tbl-self">(Tú)</span>'
                       : `<div class="tbl-actions">
                           ${!isAdmin
-                            ? `<button class="btn btn-ghost btn-xs" data-promote-user="${u.id}" title="Promover a admin">▲ Admin</button>`
-                            : `<button class="btn btn-ghost btn-xs" data-demote-user="${u.id}" title="Degradar a miembro">▼ Miembro</button>`
+                            ? `<button class="btn btn-ghost btn-xs" data-promote-user="${u.id}" title="Promover a admin">Promover</button>`
+                            : `<button class="btn btn-ghost btn-xs" data-demote-user="${u.id}" title="Degradar a miembro">Degradar</button>`
                           }
-                          <button class="btn btn-danger btn-xs" data-delete-user="${u.id}" title="Eliminar">✕</button>
+                          <button class="btn btn-danger btn-xs" data-delete-user="${u.id}" title="Eliminar">Eliminar</button>
                         </div>`
                     }
                   </td>
@@ -1423,229 +1427,226 @@
         </table>
       </div>
       <div class="tbl-footer">Mostrando ${filtered.length} de ${_usersCache.length} usuarios</div>
-    `;
+    `; // Instrucción
 
-    container.querySelectorAll('[data-promote-user]').forEach(btn =>
-      btn.addEventListener('click', async () => {
-        if (!confirm('¿Promover a este usuario a administrador?')) return;
-        const res = await api('update_user_role', 'POST', { user_id: parseInt(btn.dataset.promoteUser), role: 'admin' });
-        if (res?.success) { toast('Usuario promovido a admin', 'success'); _usersCache = []; renderAdminUsersTable(); updateAdminMetrics(); }
-        else toast(res?.error || 'Error', 'error');
-      })
-    );
-    container.querySelectorAll('[data-demote-user]').forEach(btn =>
-      btn.addEventListener('click', async () => {
-        if (!confirm('¿Degradar a miembro?')) return;
-        const res = await api('update_user_role', 'POST', { user_id: parseInt(btn.dataset.demoteUser), role: 'member' });
-        if (res?.success) { toast('Rol actualizado a miembro', 'info'); _usersCache = []; renderAdminUsersTable(); }
-        else toast(res?.error || 'Error', 'error');
-      })
-    );
-    container.querySelectorAll('[data-delete-user]').forEach(btn =>
-      btn.addEventListener('click', async () => {
-        if (!confirm('¿Eliminar este usuario y todos sus posts? Esta acción es irreversible.')) return;
-        const row = container.querySelector(`[data-user-row="${btn.dataset.deleteUser}"]`);
-        if (row) { row.style.opacity = '0.4'; row.style.pointerEvents = 'none'; }
-        const res = await api('delete_user', 'POST', { user_id: parseInt(btn.dataset.deleteUser) });
-        if (res?.success) {
-          toast('Usuario eliminado', 'error');
-          _usersCache = [];
-          renderAdminUsersTable();
-          updateAdminMetrics();
-        } else {
-          if (row) { row.style.opacity = ''; row.style.pointerEvents = ''; }
-          toast(res?.error || 'Error al eliminar', 'error');
+    container.querySelectorAll('[data-promote-user]').forEach(btn => // Busca elemento(s) en el DOM
+      btn.addEventListener('click', async () => { // Escucha un evento
+        if (!confirm('¿Promover a este usuario a administrador?')) return; // Condición
+        const res = await api('update_user_role', 'POST', { user_id: parseInt(btn.dataset.promoteUser), role: 'admin' }); // Declara una variable
+        if (res?.success) { toast('Usuario promovido a admin', 'success'); _usersCache = []; renderAdminUsersTable(); updateAdminMetrics(); } // Condición
+        else toast(res?.error || 'Error', 'error'); // Caso alternativo
+      }) // Instrucción
+    ); // Instrucción
+    container.querySelectorAll('[data-demote-user]').forEach(btn => // Busca elemento(s) en el DOM
+      btn.addEventListener('click', async () => { // Escucha un evento
+        if (!confirm('¿Degradar a miembro?')) return; // Condición
+        const res = await api('update_user_role', 'POST', { user_id: parseInt(btn.dataset.demoteUser), role: 'member' }); // Declara una variable
+        if (res?.success) { toast('Rol actualizado a miembro', 'info'); _usersCache = []; renderAdminUsersTable(); } // Condición
+        else toast(res?.error || 'Error', 'error'); // Caso alternativo
+      }) // Instrucción
+    ); // Instrucción
+    container.querySelectorAll('[data-delete-user]').forEach(btn => // Busca elemento(s) en el DOM
+      btn.addEventListener('click', async () => { // Escucha un evento
+        if (!confirm('¿Eliminar este usuario y todos sus posts? Esta acción es irreversible.')) return; // Condición
+        const row = container.querySelector(`[data-user-row="${btn.dataset.deleteUser}"]`); // Declara una variable
+        if (row) { row.style.opacity = '0.4'; row.style.pointerEvents = 'none'; } // Condición
+        const res = await api('delete_user', 'POST', { user_id: parseInt(btn.dataset.deleteUser) }); // Declara una variable
+        if (res?.success) { // Condición
+          toast('Usuario eliminado', 'error'); // Muestra una notificación
+          _usersCache = []; // Asigna un valor
+          renderAdminUsersTable(); // Llama a una función
+          updateAdminMetrics(); // Llama a una función
+        } else { // Instrucción
+          if (row) { row.style.opacity = ''; row.style.pointerEvents = ''; } // Condición
+          toast(res?.error || 'Error al eliminar', 'error'); // Muestra una notificación
         }
-      })
-    );
+      }) // Instrucción
+    ); // Instrucción
   }
 
   /* ═══════════════════════════════════════════════════════════
      ADMIN — backups tab
   ═══════════════════════════════════════════════════════════ */
-  function initAdminBackupsTab() {
-    const pane = document.querySelector('[data-admin-pane="backups"]');
-    if (!pane || pane.dataset.initialized) return;
-    pane.dataset.initialized = 'true';
+  function initAdminBackupsTab() { // Función
+    const pane = document.querySelector('[data-admin-pane="backups"]'); // Declara una variable
+    if (!pane || pane.dataset.initialized) return; // Condición
+    pane.dataset.initialized = 'true'; // Asigna un valor
 
-    async function triggerDownload(url, btn, label) {
-      const original = btn.textContent;
-      btn.disabled = true;
-      btn.textContent = 'Generando…';
-      toast(label, 'info');
-      try {
-        const res = await fetch(url);
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          toast(err.error || 'Error al generar el backup', 'error');
-          return;
+    async function triggerDownload(url, btn, label) { // Función
+      const original = btn.textContent; // Declara una variable
+      btn.disabled = true; // Asigna un valor
+      btn.textContent = 'Generando…'; // Fija el texto del elemento
+      toast(label, 'info'); // Muestra una notificación
+      try { // Instrucción
+        const res = await fetch(url); // Declara una variable
+        if (!res.ok) { // Condición
+          const err = await res.json().catch(() => ({})); // Función flecha
+          toast(err.error || 'Error al generar el backup', 'error'); // Muestra una notificación
+          return; // Devuelve el resultado
         }
-        const blob = await res.blob();
-        const cd       = res.headers.get('Content-Disposition') || '';
-        const match    = cd.match(/filename="?([^";\n]+)"?/);
-        const filename = match ? match[1] : 'nexus_backup';
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = filename;
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-        toast('Descarga completada ✓', 'success');
-      } catch {
-        toast('Error de conexión al generar el backup', 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = original;
+        const blob = await res.blob(); // Declara una variable
+        const cd       = res.headers.get('Content-Disposition') || ''; // Declara una variable
+        const match    = cd.match(/filename="?([^";\n]+)"?/); // Declara una variable
+        const filename = match ? match[1] : 'nexus_backup'; // Declara una variable
+        const a = document.createElement('a'); // Declara una variable
+        a.href = URL.createObjectURL(blob); // Asigna un valor
+        a.download = filename; // Asigna un valor
+        a.style.display = 'none'; // Asigna un valor
+        document.body.appendChild(a); // Añade el elemento al DOM
+        a.click(); // Llama a una función
+        document.body.removeChild(a); // Llama a una función
+        setTimeout(() => URL.revokeObjectURL(a.href), 10000); // Temporizador
+        toast('Descarga completada', 'success'); // Muestra una notificación
+      } catch { // Instrucción
+        toast('Error de conexión al generar el backup', 'error'); // Muestra una notificación
+      } finally { // Instrucción
+        btn.disabled = false; // Asigna un valor
+        btn.textContent = original; // Fija el texto del elemento
       }
     }
 
-    pane.querySelector('[data-backup-db]')?.addEventListener('click', function () {
-      triggerDownload('api.php?action=backup_database', this, 'Generando dump SQL — un momento…');
+    pane.querySelector('[data-backup-db]')?.addEventListener('click', function () { // Escucha un evento
+      triggerDownload('api.php?action=backup_database', this, 'Generando dump SQL — un momento…'); // Llama a una función
     });
 
-    pane.querySelector('[data-backup-files]')?.addEventListener('click', function () {
-      triggerDownload('api.php?action=backup_files', this, 'Generando ZIP de la web — puede tardar unos segundos…');
+    pane.querySelector('[data-backup-files]')?.addEventListener('click', function () { // Escucha un evento
+      triggerDownload('api.php?action=backup_files', this, 'Generando ZIP de la web — puede tardar unos segundos…'); // Llama a una función
     });
 
     /* ── Restore section ── */
-    const zipInput   = pane.querySelector('[data-restore-zip-input]');
-    const restoreBtn = pane.querySelector('[data-restore-btn]');
-    const fileInfo   = pane.querySelector('[data-restore-file-info]');
-    const restorePin = pane.querySelector('[data-restore-pin]');
-    const statusEl   = pane.querySelector('[data-restore-status]');
-    const dropArea   = pane.querySelector('[data-restore-drop]');
+    const zipInput   = pane.querySelector('[data-restore-zip-input]'); // Declara una variable
+    const restoreBtn = pane.querySelector('[data-restore-btn]'); // Declara una variable
+    const fileInfo   = pane.querySelector('[data-restore-file-info]'); // Declara una variable
+    const restorePin = pane.querySelector('[data-restore-pin]'); // Declara una variable
+    const statusEl   = pane.querySelector('[data-restore-status]'); // Declara una variable
+    const dropArea   = pane.querySelector('[data-restore-drop]'); // Declara una variable
 
-    function setRestoreFile(file) {
-      if (!file || file.type !== 'application/zip' && !file.name.endsWith('.zip')) {
-        toast('Selecciona un archivo .zip válido', 'error');
-        return;
+    function setRestoreFile(file) { // Función
+      if (!file || file.type !== 'application/zip' && !file.name.endsWith('.zip')) { // Condición
+        toast('Selecciona un archivo .zip válido', 'error'); // Muestra una notificación
+        return; // Devuelve el resultado
       }
-      fileInfo.textContent = `📦 ${file.name}  ·  ${(file.size / 1024 / 1024).toFixed(2)} MB`;
-      fileInfo.classList.remove('hidden');
-      restoreBtn.disabled = false;
+      fileInfo.textContent = `${file.name}  ·  ${(file.size / 1024 / 1024).toFixed(2)} MB`; // Fija el texto del elemento
+      fileInfo.classList.remove('hidden'); // Cambia clases CSS
+      restoreBtn.disabled = false; // Asigna un valor
       /* Replace the input's file list by reassigning via DataTransfer */
-      const dt = new DataTransfer();
-      dt.items.add(file);
-      zipInput.files = dt.files;
+      const dt = new DataTransfer(); // Declara una variable
+      dt.items.add(file); // Llama a una función
+      zipInput.files = dt.files; // Asigna un valor
     }
 
-    zipInput?.addEventListener('change', () => {
-      if (zipInput.files[0]) setRestoreFile(zipInput.files[0]);
+    zipInput?.addEventListener('change', () => { // Escucha un evento
+      if (zipInput.files[0]) setRestoreFile(zipInput.files[0]); // Condición
     });
 
     /* Drag & drop onto the drop area */
-    dropArea?.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('is-dragging'); });
-    dropArea?.addEventListener('dragleave', () => dropArea.classList.remove('is-dragging'));
-    dropArea?.addEventListener('drop', e => {
-      e.preventDefault();
-      dropArea.classList.remove('is-dragging');
-      const file = e.dataTransfer?.files[0];
-      if (file) setRestoreFile(file);
+    dropArea?.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('is-dragging'); }); // Escucha un evento
+    dropArea?.addEventListener('dragleave', () => dropArea.classList.remove('is-dragging')); // Escucha un evento
+    dropArea?.addEventListener('drop', e => { // Escucha un evento
+      e.preventDefault(); // Cancela el comportamiento por defecto
+      dropArea.classList.remove('is-dragging'); // Cambia clases CSS
+      const file = e.dataTransfer?.files[0]; // Declara una variable
+      if (file) setRestoreFile(file); // Condición
     });
 
-    restoreBtn?.addEventListener('click', async () => {
-      const file = zipInput?.files[0];
-      if (!file) { toast('Selecciona un archivo ZIP primero', 'error'); return; }
-      if ((restorePin?.value || '') !== '565656') { toast('PIN incorrecto', 'error'); return; }
-      if (!confirm('¿Restaurar la web desde este ZIP?\n\nLos archivos actuales serán sobreescritos. Esta acción no se puede deshacer.')) return;
+    restoreBtn?.addEventListener('click', async () => { // Escucha un evento
+      const file = zipInput?.files[0]; // Declara una variable
+      if (!file) { toast('Selecciona un archivo ZIP primero', 'error'); return; } // Condición
+      if (!(restorePin?.value || '').trim()) { toast('Introduce el PIN', 'error'); return; } // El servidor valida el PIN real
+      if (!confirm('¿Restaurar la web desde este ZIP?\n\nLos archivos actuales serán sobreescritos. Esta acción no se puede deshacer.')) return; // Condición
 
-      restoreBtn.disabled = true;
-      restoreBtn.textContent = 'Restaurando…';
-      statusEl.textContent = 'Subiendo y procesando el ZIP…';
-      statusEl.className = 'restore-status restore-status--loading';
-      statusEl.classList.remove('hidden');
+      restoreBtn.disabled = true; // Asigna un valor
+      restoreBtn.textContent = 'Restaurando…'; // Fija el texto del elemento
+      statusEl.textContent = 'Subiendo y procesando el ZIP…'; // Fija el texto del elemento
+      statusEl.className = 'restore-status restore-status--loading'; // Asigna un valor
+      statusEl.classList.remove('hidden'); // Cambia clases CSS
 
-      const fd = new FormData();
-      fd.append('zipfile', file);
-      fd.append('pin', restorePin.value);
+      const fd = new FormData(); // Declara una variable
+      fd.append('zipfile', file); // Añade el elemento al DOM
+      fd.append('pin', restorePin.value); // Añade el elemento al DOM
 
-      try {
-        const res  = await fetch('api.php?action=restore_files', { method: 'POST', body: fd });
-        const data = await res.json();
-        if (data.success) {
-          statusEl.textContent = '✓ ' + data.message;
-          statusEl.className = 'restore-status restore-status--ok';
-          toast(data.message, 'success');
-        } else {
-          statusEl.textContent = '✗ ' + (data.error || 'Error desconocido');
-          statusEl.className = 'restore-status restore-status--error';
-          toast(data.error || 'Error al restaurar', 'error');
+      try { // Instrucción
+        const res  = await fetch('api.php?action=restore_files', { method: 'POST', body: fd }); // Declara una variable
+        const data = await res.json(); // Declara una variable
+        if (data.success) { // Condición
+          statusEl.textContent = data.message; // Fija el texto del elemento
+          statusEl.className = 'restore-status restore-status--ok'; // Asigna un valor
+          toast(data.message, 'success'); // Muestra una notificación
+        } else { // Instrucción
+          statusEl.textContent = (data.error || 'Error desconocido'); // Fija el texto del elemento
+          statusEl.className = 'restore-status restore-status--error'; // Asigna un valor
+          toast(data.error || 'Error al restaurar', 'error'); // Muestra una notificación
         }
-      } catch {
-        statusEl.textContent = '✗ Error de conexión. Comprueba que el servidor está activo.';
-        statusEl.className = 'restore-status restore-status--error';
-        toast('Error de conexión', 'error');
-      } finally {
-        restoreBtn.disabled = false;
-        restoreBtn.textContent = 'Restaurar web';
+      } catch { // Instrucción
+        statusEl.textContent = 'Error de conexión. Comprueba que el servidor está activo.'; // Fija el texto del elemento
+        statusEl.className = 'restore-status restore-status--error'; // Asigna un valor
+        toast('Error de conexión', 'error'); // Muestra una notificación
+      } finally { // Instrucción
+        restoreBtn.disabled = false; // Asigna un valor
+        restoreBtn.textContent = 'Restaurar web'; // Fija el texto del elemento
       }
-    });
-
-    pane.querySelector('[data-backup-full]')?.addEventListener('click', function () {
-      triggerDownload('api.php?action=backup_full', this,
-        'Generando backup completo (web + base de datos) — puede tardar varios segundos…');
     });
   }
 
   /* ═══════════════════════════════════════════════════════════
      ADMIN — danger zone tab
   ═══════════════════════════════════════════════════════════ */
-  function initAdminDangerTab() {
-    const pane = document.querySelector('[data-admin-pane="danger"]');
-    if (!pane || pane.dataset.initialized) return;
-    pane.dataset.initialized = 'true';
+  function initAdminDangerTab() { // Función
+    const pane = document.querySelector('[data-admin-pane="danger"]'); // Declara una variable
+    if (!pane || pane.dataset.initialized) return; // Condición
+    pane.dataset.initialized = 'true'; // Asigna un valor
 
-    const pinInput  = pane.querySelector('[data-danger-pin]');
-    const verifyBtn = pane.querySelector('[data-danger-verify]');
-    const actions   = pane.querySelector('[data-danger-actions]');
-    const pinStatus = pane.querySelector('[data-pin-status]');
+    const pinInput  = pane.querySelector('[data-danger-pin]'); // Declara una variable
+    const verifyBtn = pane.querySelector('[data-danger-verify]'); // Declara una variable
+    const actions   = pane.querySelector('[data-danger-actions]'); // Declara una variable
+    const pinStatus = pane.querySelector('[data-pin-status]'); // Declara una variable
+    let dangerPin   = ''; // Guarda el PIN introducido para enviarlo al servidor (el servidor lo valida)
 
-    verifyBtn?.addEventListener('click', () => {
-      if (pinInput.value === '565656') {
-        pinStatus.textContent  = '✓ PIN correcto — acciones desbloqueadas';
-        pinStatus.className    = 'pin-status pin-ok';
-        actions?.classList.remove('hidden');
-        pinInput.disabled  = true;
-        verifyBtn.disabled = true;
-      } else {
-        pinStatus.textContent = '✕ PIN incorrecto. Inténtalo de nuevo.';
-        pinStatus.className   = 'pin-status pin-error';
-        pinInput.value = '';
-        pinInput.focus();
+    verifyBtn?.addEventListener('click', () => { // Escucha un evento
+      if ((pinInput.value || '').trim()) { // Si se ha introducido un PIN no vacío...
+        dangerPin = pinInput.value; // Guarda el PIN para las acciones (el servidor comprueba si es correcto)
+        pinStatus.textContent  = 'PIN introducido — se verificará en cada acción'; // Fija el texto del elemento
+        pinStatus.className    = 'pin-status pin-ok'; // Asigna un valor
+        actions?.classList.remove('hidden'); // Cambia clases CSS
+        pinInput.disabled  = true; // Asigna un valor
+        verifyBtn.disabled = true; // Asigna un valor
+      } else { // Instrucción
+        pinStatus.textContent = 'Introduce el PIN.'; // Fija el texto del elemento
+        pinStatus.className   = 'pin-status pin-error'; // Asigna un valor
+        pinInput.value = ''; // Asigna un valor
+        pinInput.focus(); // Llama a una función
       }
     });
 
-    pinInput?.addEventListener('keydown', e => {
-      if (e.key === 'Enter') verifyBtn?.click();
+    pinInput?.addEventListener('keydown', e => { // Escucha un evento
+      if (e.key === 'Enter') verifyBtn?.click(); // Condición
     });
 
-    pane.querySelectorAll('[data-reset-target]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const target = btn.dataset.resetTarget;
-        const label  = btn.dataset.resetLabel || target;
-        if (!confirm(`⚠️ ¿Estás SEGURO de que quieres ${label}?\n\nEsta acción es IRREVERSIBLE. No se puede deshacer.`)) return;
-        if (target === 'database' && !confirm('ÚLTIMA ADVERTENCIA: Se eliminará la base de datos completa. ¿Continuar?')) return;
+    pane.querySelectorAll('[data-reset-target]').forEach(btn => { // Busca elemento(s) en el DOM
+      btn.addEventListener('click', async () => { // Escucha un evento
+        const target = btn.dataset.resetTarget; // Declara una variable
+        const label  = btn.dataset.resetLabel || target; // Declara una variable
+        if (!confirm(`¿Estás SEGURO de que quieres ${label}?\n\nEsta acción es IRREVERSIBLE. No se puede deshacer.`)) return; // Condición
+        if (target === 'database' && !confirm('ÚLTIMA ADVERTENCIA: Se eliminará la base de datos completa. ¿Continuar?')) return; // Condición
 
-        const orig = btn.textContent;
-        btn.disabled    = true;
-        btn.textContent = 'Procesando…';
+        const orig = btn.textContent; // Declara una variable
+        btn.disabled    = true; // Asigna un valor
+        btn.textContent = 'Procesando…'; // Fija el texto del elemento
 
-        const res = await api('reset_site', 'POST', { pin: '565656', target });
-        if (res?.success) {
-          toast(res.message || 'Acción completada', target === 'database' ? 'error' : 'success');
-          _usersCache = [];
-          updateAdminMetrics();
-          if (target === 'users' || target === 'all') {
-            _usersCache = [];
-            const usersPane = document.querySelector('[data-admin-pane="users"]');
-            if (usersPane) { delete usersPane.dataset.initialized; }
+        const res = await api('reset_site', 'POST', { pin: dangerPin, target }); // Envía el PIN introducido; el servidor lo valida
+        if (res?.success) { // Condición
+          toast(res.message || 'Acción completada', target === 'database' ? 'error' : 'success'); // Muestra una notificación
+          _usersCache = []; // Asigna un valor
+          updateAdminMetrics(); // Llama a una función
+          if (target === 'users' || target === 'all') { // Condición
+            _usersCache = []; // Asigna un valor
+            const usersPane = document.querySelector('[data-admin-pane="users"]'); // Declara una variable
+            if (usersPane) { delete usersPane.dataset.initialized; } // Condición
           }
-        } else {
-          toast(res?.error || 'Error al ejecutar la acción', 'error');
-          btn.disabled    = false;
-          btn.textContent = orig;
+        } else { // Instrucción
+          toast(res?.error || 'Error al ejecutar la acción', 'error'); // Muestra una notificación
+          btn.disabled    = false; // Asigna un valor
+          btn.textContent = orig; // Fija el texto del elemento
         }
       });
     });
@@ -1655,20 +1656,20 @@
      COPY TO CLIPBOARD utility
   ═══════════════════════════════════════════════════════════ */
 
-  async function copyToClipboard(text) {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast('Copiado al portapapeles', 'success');
-    } catch {
-      const el = document.createElement('textarea');
-      el.value = text;
-      el.style.position = 'fixed';
-      el.style.opacity  = '0';
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-      toast('Copiado al portapapeles', 'success');
+  async function copyToClipboard(text) { // Función
+    try { // Instrucción
+      await navigator.clipboard.writeText(text); // Instrucción
+      toast('Copiado al portapapeles', 'success'); // Muestra una notificación
+    } catch { // Instrucción
+      const el = document.createElement('textarea'); // Declara una variable
+      el.value = text; // Asigna un valor
+      el.style.position = 'fixed'; // Asigna un valor
+      el.style.opacity  = '0'; // Asigna un valor
+      document.body.appendChild(el); // Añade el elemento al DOM
+      el.select(); // Llama a una función
+      document.execCommand('copy'); // Llama a una función
+      document.body.removeChild(el); // Llama a una función
+      toast('Copiado al portapapeles', 'success'); // Muestra una notificación
     }
   }
 
@@ -1676,30 +1677,30 @@
      RELATIVE TIME — "hace 2 horas" format
   ═══════════════════════════════════════════════════════════ */
 
-  function relativeTime(dateStr) {
-    const now  = Date.now();
-    const then = new Date(dateStr).getTime();
-    const diff = Math.floor((now - then) / 1000);
+  function relativeTime(dateStr) { // Función
+    const now  = Date.now(); // Declara una variable
+    const then = new Date(dateStr).getTime(); // Declara una variable
+    const diff = Math.floor((now - then) / 1000); // Declara una variable
 
-    if (diff < 60)           return 'hace unos segundos';
-    if (diff < 3600)         return `hace ${Math.floor(diff / 60)} min`;
-    if (diff < 86400)        return `hace ${Math.floor(diff / 3600)} h`;
-    if (diff < 86400 * 7)    return `hace ${Math.floor(diff / 86400)} d`;
-    if (diff < 86400 * 30)   return `hace ${Math.floor(diff / (86400 * 7))} sem`;
-    if (diff < 86400 * 365)  return `hace ${Math.floor(diff / (86400 * 30))} mes`;
-    return `hace ${Math.floor(diff / (86400 * 365))} año(s)`;
+    if (diff < 60)           return 'hace unos segundos'; // Condición
+    if (diff < 3600)         return `hace ${Math.floor(diff / 60)} min`; // Condición
+    if (diff < 86400)        return `hace ${Math.floor(diff / 3600)} h`; // Condición
+    if (diff < 86400 * 7)    return `hace ${Math.floor(diff / 86400)} d`; // Condición
+    if (diff < 86400 * 30)   return `hace ${Math.floor(diff / (86400 * 7))} sem`; // Condición
+    if (diff < 86400 * 365)  return `hace ${Math.floor(diff / (86400 * 30))} mes`; // Condición
+    return `hace ${Math.floor(diff / (86400 * 365))} año(s)`; // Devuelve el resultado
   }
 
   /* ═══════════════════════════════════════════════════════════
      LIVE POST COUNTER — shows count next to forum heading
   ═══════════════════════════════════════════════════════════ */
 
-  async function updatePostCounter() {
-    const badge = document.querySelector('[data-post-count-badge]');
-    if (!badge) return;
-    const stats = await api('get_stats');
-    if (stats?.posts !== undefined) {
-      badge.textContent = fmtNumber(stats.posts) + ' tema' + (stats.posts !== 1 ? 's' : '');
+  async function updatePostCounter() { // Función
+    const badge = document.querySelector('[data-post-count-badge]'); // Declara una variable
+    if (!badge) return; // Condición
+    const stats = await api('get_stats'); // Declara una variable
+    if (stats?.posts !== undefined) { // Condición
+      badge.textContent = fmtNumber(stats.posts) + ' tema' + (stats.posts !== 1 ? 's' : ''); // Fija el texto del elemento
     }
   }
 
@@ -1707,12 +1708,12 @@
      SCROLL TO FORUM — for CTA buttons linking to #foro
   ═══════════════════════════════════════════════════════════ */
 
-  function setupCTAScrollLinks() {
-    document.querySelectorAll('[data-scroll-to]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id     = btn.dataset.scrollTo;
-        const target = document.getElementById(id);
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  function setupCTAScrollLinks() { // Función
+    document.querySelectorAll('[data-scroll-to]').forEach(btn => { // Busca elemento(s) en el DOM
+      btn.addEventListener('click', () => { // Escucha un evento
+        const id     = btn.dataset.scrollTo; // Declara una variable
+        const target = document.getElementById(id); // Declara una variable
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' }); // Condición
       });
     });
   }
@@ -1721,36 +1722,36 @@
      AUTO-REFRESH POSTS — poll every 90 seconds
   ═══════════════════════════════════════════════════════════ */
 
-  function setupAutoRefresh() {
-    const page = document.body.dataset.page;
-    if (page !== 'home') return;
-    setInterval(() => {
-      renderPosts();
-      updateStats();
-    }, 90_000);
+  function setupAutoRefresh() { // Función
+    const page = document.body.dataset.page; // Declara una variable
+    if (page !== 'home') return; // Condición
+    setInterval(() => { // Temporizador
+      renderPosts(); // Llama a una función
+      updateStats(); // Llama a una función
+    }, 90_000); // Instrucción
   }
 
   /* ═══════════════════════════════════════════════════════════
      PAGE TRANSITION FADE — quick opacity fade on navigation
   ═══════════════════════════════════════════════════════════ */
 
-  function setupPageTransitions() {
-    document.querySelectorAll('a[href]').forEach(link => {
-      const href = link.getAttribute('href') || '';
-      if (
-        href.startsWith('#') ||
-        href.startsWith('javascript') ||
-        href.startsWith('mailto') ||
-        link.target === '_blank'
-      ) return;
+  function setupPageTransitions() { // Función
+    document.querySelectorAll('a[href]').forEach(link => { // Busca elemento(s) en el DOM
+      const href = link.getAttribute('href') || ''; // Declara una variable
+      if ( // Condición
+        href.startsWith('#') || // Llama a una función
+        href.startsWith('javascript') || // Llama a una función
+        href.startsWith('mailto') || // Llama a una función
+        link.target === '_blank' // Asigna un valor
+      ) return; // Instrucción
 
-      link.addEventListener('click', e => {
-        const wrap = document.querySelector('.page-wrap');
-        if (!wrap) return;
-        e.preventDefault();
-        wrap.style.transition = 'opacity 0.22s ease';
-        wrap.style.opacity    = '0';
-        setTimeout(() => { window.location.href = href; }, 200);
+      link.addEventListener('click', e => { // Escucha un evento
+        const wrap = document.querySelector('.page-wrap'); // Declara una variable
+        if (!wrap) return; // Condición
+        e.preventDefault(); // Cancela el comportamiento por defecto
+        wrap.style.transition = 'opacity 0.22s ease'; // Asigna un valor
+        wrap.style.opacity    = '0'; // Asigna un valor
+        setTimeout(() => { window.location.href = href; }, 200); // Temporizador
       });
     });
   }
@@ -1759,33 +1760,33 @@
      FORUM STATS ANIMATED COUNTER
   ═══════════════════════════════════════════════════════════ */
 
-  function animateCounter(el, target, duration = 900) {
-    const start    = performance.now();
-    const startVal = 0;
-    const step = ts => {
-      const elapsed  = ts - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased    = 1 - Math.pow(1 - progress, 3);
-      el.textContent = fmtNumber(Math.round(startVal + (target - startVal) * eased));
-      if (progress < 1) requestAnimationFrame(step);
+  function animateCounter(el, target, duration = 900) { // Función
+    const start    = performance.now(); // Declara una variable
+    const startVal = 0; // Declara una variable
+    const step = ts => { // Función flecha
+      const elapsed  = ts - start; // Declara una variable
+      const progress = Math.min(elapsed / duration, 1); // Declara una variable
+      const eased    = 1 - Math.pow(1 - progress, 3); // Declara una variable
+      el.textContent = fmtNumber(Math.round(startVal + (target - startVal) * eased)); // Fija el texto del elemento
+      if (progress < 1) requestAnimationFrame(step); // Condición
     };
-    requestAnimationFrame(step);
+    requestAnimationFrame(step); // Llama a una función
   }
 
-  async function animateStatsOnLoad() {
-    const stats = await api('get_stats');
-    if (!stats) return;
-    const targets = {
-      '[data-stat-posts]':    stats.posts  || 0,
-      '[data-stat-users]':    stats.users  || 0,
-      '[data-stat-online]':   Math.max(1, Math.min(stats.users || 0, 12)),
-      '[data-approved-count]':stats.posts  || 0,
-      '[data-pending-count]': stats.pending || 0,
-      '[data-likes-count]':   stats.likes  || 0,
+  async function animateStatsOnLoad() { // Función
+    const stats = await api('get_stats'); // Declara una variable
+    if (!stats) return; // Condición
+    const targets = { // Declara una variable
+      '[data-stat-posts]':    stats.posts  || 0, // Instrucción
+      '[data-stat-users]':    stats.users  || 0, // Instrucción
+      '[data-stat-online]':   Math.max(1, Math.min(stats.users || 0, 12)), // Instrucción
+      '[data-approved-count]':stats.posts  || 0, // Instrucción
+      '[data-pending-count]': stats.pending || 0, // Instrucción
+      '[data-likes-count]':   stats.likes  || 0, // Instrucción
     };
-    Object.entries(targets).forEach(([sel, val]) => {
-      const el = document.querySelector(sel);
-      if (el) animateCounter(el, val, 1200);
+    Object.entries(targets).forEach(([sel, val]) => { // Recorre la lista
+      const el = document.querySelector(sel); // Declara una variable
+      if (el) animateCounter(el, val, 1200); // Condición
     });
   }
 
@@ -1793,41 +1794,41 @@
      INIT
   ═══════════════════════════════════════════════════════════ */
 
-  function init() {
-    const page = document.body.dataset.page;
+  function init() { // Función
+    const page = document.body.dataset.page; // Declara una variable
 
-    setupMobileNav();
-    renderAuthSlot();
-    setupScrollReveal();
-    setupKeyboardShortcuts();
-    setupSmoothScroll();
-    setupBackToTop();
-    setupStickyHeader();
-    setupCTAScrollLinks();
-    setupPageTransitions();
+    setupMobileNav(); // Llama a una función
+    renderAuthSlot(); // Llama a una función
+    setupScrollReveal(); // Llama a una función
+    setupKeyboardShortcuts(); // Llama a una función
+    setupSmoothScroll(); // Llama a una función
+    setupBackToTop(); // Llama a una función
+    setupStickyHeader(); // Llama a una función
+    setupCTAScrollLinks(); // Llama a una función
+    setupPageTransitions(); // Llama a una función
 
-    if (page === 'home') {
-      applyPrefs();
-      setupComposer();
-      setupFilters();
-      setupContactForm();
-      setupSearchDebounce();
-      setupCharCounters();
-      persistFilterPrefs();
-      animateStatsOnLoad();
-      renderLeaderboardExtended();
-      renderSessionPanel();
-      renderPosts();
-      renderMembersList();
-      updatePostCounter();
-      setupAutoRefresh();
+    if (page === 'home') { // Condición
+      applyPrefs(); // Llama a una función
+      setupComposer(); // Llama a una función
+      setupFilters(); // Llama a una función
+      setupContactForm(); // Llama a una función
+      setupSearchDebounce(); // Llama a una función
+      setupCharCounters(); // Llama a una función
+      persistFilterPrefs(); // Llama a una función
+      animateStatsOnLoad(); // Llama a una función
+      renderLeaderboardExtended(); // Llama a una función
+      renderSessionPanel(); // Llama a una función
+      renderPosts(); // Llama a una función
+      renderMembersList(); // Llama a una función
+      updatePostCounter(); // Llama a una función
+      setupAutoRefresh(); // Llama a una función
     }
 
-    if (page === 'admin') {
-      renderAdminPageFull();
+    if (page === 'admin') { // Condición
+      renderAdminPageFull(); // Llama a una función
     }
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', init); // Escucha un evento
 
-})();
+})(); // Instrucción
