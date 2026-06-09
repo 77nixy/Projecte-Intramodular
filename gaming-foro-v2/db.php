@@ -1,24 +1,33 @@
 <?php
 /**
- * NEXUS//BOARD — Database bootstrap
- * Creates all tables if missing, seeds the admin account,
- * seeds demo member accounts, and seeds demo posts & contacts.
+ * NEXUS — Arranque de la base de datos
+ * Crea todas las tablas si faltan, siembra la cuenta de administrador,
+ * cuentas de miembros de demostración y posts y contactos de ejemplo.
  */
 
-$host      = 'localhost';
-$usuario   = 'root';
-$contrasena = '';
-$basedatos  = 'usuarios_db';
+/* Carga las credenciales desde config.php (ignorado por git). Si no existe
+   todavía, usa la plantilla config.example.php como respaldo. */
+if (file_exists(__DIR__ . '/config.php')) {           // ¿Existe tu config real?
+    require_once __DIR__ . '/config.php';             // Sí → carga tus credenciales
+} else {                                              // Si no...
+    require_once __DIR__ . '/config.example.php';     // ...usa la plantilla por defecto
+}
 
-/* Intentar conectar, crear la BD si no existe aún */
-$connCheck = @new mysqli($host, $usuario, $contrasena);
-if ($connCheck->connect_error) {
-    $isApi = (str_contains($_SERVER['SCRIPT_NAME'] ?? '', 'api.php'));
-    if ($isApi) {
-        header('Content-Type: application/json');
-        http_response_code(503);
-        die(json_encode(['error' => 'MySQL no disponible. Ejecuta ARRANCAR.bat primero.']));
+$host      = DB_HOST;     // Servidor de MySQL (definido en config.php)
+$usuario   = DB_USER;     // Usuario de MySQL (definido en config.php)
+$contrasena = DB_PASS;    // Contraseña de MySQL (definida en config.php)
+$basedatos  = DB_NAME;    // Nombre de la base de datos (definido en config.php)
+
+/* Intenta conectar; si la BD no existe todavía, se creará más abajo */
+$connCheck = @new mysqli($host, $usuario, $contrasena); // Conexión SIN seleccionar BD (la @ silencia el warning)
+if ($connCheck->connect_error) { // Si MySQL no responde (servidor apagado)...
+    $isApi = (str_contains($_SERVER['SCRIPT_NAME'] ?? '', 'api.php')); // ¿La petición viene de la API?
+    if ($isApi) { // Si es la API, responde en JSON (no HTML)
+        header('Content-Type: application/json'); // Cabecera JSON
+        http_response_code(503); // 503 = servicio no disponible
+        die(json_encode(['error' => 'MySQL no disponible. Ejecuta ARRANCAR.bat primero.'])); // Mensaje de error y fin
     }
+    // Si es una página normal, muestra una página de error HTML amigable:
     die('<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
 <title>NEXUS//BOARD — Error de base de datos</title>
 <style>body{background:#020208;color:#e8eef8;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
@@ -33,17 +42,29 @@ o inicia MySQL desde el panel de XAMPP.</p>
 </div></body></html>');
 }
 
+// Crea la base de datos si no existe, con codificación UTF-8 completa (utf8mb4 admite emojis):
 $connCheck->query("CREATE DATABASE IF NOT EXISTS `{$basedatos}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-$connCheck->close();
+$connCheck->close(); // Cierra la conexión temporal sin BD
 
-$conn = new mysqli($host, $usuario, $contrasena, $basedatos);
-if ($conn->connect_error) {
-    die(json_encode(['error' => 'Error de conexión: ' . $conn->connect_error]));
+$conn = new mysqli($host, $usuario, $contrasena, $basedatos); // Conexión definitiva, ya con la BD seleccionada
+if ($conn->connect_error) { // Si falla esta conexión...
+    die(json_encode(['error' => 'Error de conexión: ' . $conn->connect_error])); // ...muestra el error y termina
 }
-$conn->set_charset('utf8mb4');
+$conn->set_charset('utf8mb4'); // Fuerza UTF-8 en la comunicación con MySQL
 
 /* ═══════════════════════════════════════════════════════════════
-   TABLE: usuarios
+   TABLA: usuarios — cuentas registradas
+   Columnas:
+     id            → clave primaria autoincremental
+     nombre        → nombre visible (máx 100)
+     username      → nick único (máx 50)
+     email         → correo único (máx 150)
+     password      → hash bcrypt de la contraseña (máx 255)
+     favorite_game → juego favorito (por defecto 'Otro')
+     bio           → biografía opcional (texto)
+     role          → 'admin' o 'member' (por defecto 'member')
+     fecha_registro→ fecha de alta automática
+   Índices en role y fecha_registro para acelerar filtros/orden.
    ═══════════════════════════════════════════════════════════════ */
 $conn->query("CREATE TABLE IF NOT EXISTS usuarios (
     id              INT AUTO_INCREMENT PRIMARY KEY,
@@ -60,7 +81,18 @@ $conn->query("CREATE TABLE IF NOT EXISTS usuarios (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
 /* ═══════════════════════════════════════════════════════════════
-   TABLE: posts
+   TABLA: posts — publicaciones del foro
+   Columnas:
+     id         → clave primaria autoincremental
+     title      → título del post (máx 100)
+     content    → cuerpo del post (texto)
+     category   → categoría (fps, moba, hardware...)
+     author_id  → ID del autor (clave foránea a usuarios)
+     likes      → número de "me gusta"
+     approved   → 0 pendiente de moderación, 1 aprobado
+     created_at → fecha de creación automática
+   FOREIGN KEY con ON DELETE CASCADE: si se borra el usuario, se borran sus posts.
+   Índices en category, approved, created_at y likes para listados rápidos.
    ═══════════════════════════════════════════════════════════════ */
 $conn->query("CREATE TABLE IF NOT EXISTS posts (
     id          INT AUTO_INCREMENT PRIMARY KEY,
@@ -79,7 +111,16 @@ $conn->query("CREATE TABLE IF NOT EXISTS posts (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
 /* ═══════════════════════════════════════════════════════════════
-   TABLE: contacts
+   TABLA: contacts — mensajes del formulario de contacto
+   Columnas:
+     id         → clave primaria autoincremental
+     name       → nombre de quien escribe (máx 100)
+     email      → correo de contacto (máx 150)
+     subject    → asunto (máx 200)
+     message    → cuerpo del mensaje (texto)
+     `read`     → 0 sin leer, 1 leído (va entre comillas por ser palabra reservada)
+     created_at → fecha de envío automática
+   Índices en read y created_at para la bandeja del admin.
    ═══════════════════════════════════════════════════════════════ */
 $conn->query("CREATE TABLE IF NOT EXISTS contacts (
     id          INT AUTO_INCREMENT PRIMARY KEY,
@@ -94,39 +135,40 @@ $conn->query("CREATE TABLE IF NOT EXISTS contacts (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
 /* ═══════════════════════════════════════════════════════════════
-   SEED: Admin account
+   SIEMBRA: cuenta de administrador
    ═══════════════════════════════════════════════════════════════ */
-$adminEmail = 'admin@nexusboard.gg';
-$checkAdmin = $conn->prepare('SELECT id FROM usuarios WHERE email = ? LIMIT 1');
-$checkAdmin->bind_param('s', $adminEmail);
-$checkAdmin->execute();
-$adminExists = $checkAdmin->get_result()->num_rows > 0;
-$checkAdmin->close();
+$adminEmail = ADMIN_EMAIL; // Email del administrador principal (desde config.php)
+$checkAdmin = $conn->prepare('SELECT id FROM usuarios WHERE email = ? LIMIT 1'); // Consulta: ¿ya existe?
+$checkAdmin->bind_param('s', $adminEmail); // Enlaza el email
+$checkAdmin->execute(); // Ejecuta la comprobación
+$adminExists = $checkAdmin->get_result()->num_rows > 0; // True si ya hay un admin con ese email
+$checkAdmin->close(); // Libera la sentencia
 
-if (!$adminExists) {
-    $adminNombre   = 'Admin Nexus';
-    $adminUsername = 'nexusadmin';
-    $adminPassword = password_hash('Admin123!', PASSWORD_BCRYPT, ['cost' => 12]);
-    $adminGame     = 'Counter-Strike';
-    $adminBio      = 'Administrador principal de NEXUS//BOARD. Aquí para mantener el orden en la galaxia.';
-    $adminRole     = 'admin';
+if (!$adminExists) { // Si el admin todavía no existe, lo crea:
+    $adminNombre   = 'Admin Nexus'; // Nombre visible del admin
+    $adminUsername = 'nexusadmin';  // Nick del admin
+    $adminPassword = password_hash(ADMIN_PASSWORD, PASSWORD_BCRYPT, ['cost' => 12]); // Hash bcrypt de la contraseña (desde config.php)
+    $adminGame     = 'Counter-Strike'; // Juego favorito del admin
+    $adminBio      = 'Administrador principal de NEXUS//BOARD. Aquí para mantener el orden en la galaxia.'; // Bio del admin
+    $adminRole     = 'admin'; // Rol de administrador
 
-    $ins = $conn->prepare(
+    $ins = $conn->prepare( // Inserción preparada del admin
         'INSERT INTO usuarios (nombre, username, email, password, favorite_game, bio, role)
          VALUES (?, ?, ?, ?, ?, ?, ?)'
     );
-    $ins->bind_param('sssssss', $adminNombre, $adminUsername, $adminEmail, $adminPassword, $adminGame, $adminBio, $adminRole);
-    $ins->execute();
-    $ins->close();
+    $ins->bind_param('sssssss', $adminNombre, $adminUsername, $adminEmail, $adminPassword, $adminGame, $adminBio, $adminRole); // 7 campos
+    $ins->execute(); // Crea la cuenta admin
+    $ins->close(); // Libera la sentencia
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SEED: Demo member accounts (only when users table is nearly empty)
+   SIEMBRA: miembros de demostración (solo si la tabla está casi vacía)
+   Cada fila del array es: [nombre, username, email, juego, bio]
    ═══════════════════════════════════════════════════════════════ */
-$userCount = (int) $conn->query("SELECT COUNT(*) as c FROM usuarios")->fetch_assoc()['c'];
+$userCount = (int) $conn->query("SELECT COUNT(*) as c FROM usuarios")->fetch_assoc()['c']; // Cuántos usuarios hay
 
-if ($userCount <= 1) {
-    $demoMembers = [
+if ($userCount <= 1) { // Si solo está el admin (o ninguno), siembra demos:
+    $demoMembers = [ // Lista de miembros ficticios: [nombre, nick, email, juego, bio]
         ['ProSniper88',   'prosniper88',   'pro@nexus.gg',      'Valorant',          'Main Jett Diamond II. Entreno aim 30 min diarios.'],
         ['LunarGG',       'lunargg',       'lunar@nexus.gg',    'Apex Legends',      'Jugador de ranked desde temporada 1. Lifeline main.'],
         ['GalaxyBuilder', 'galaxybuilder', 'galaxy@nexus.gg',   'Minecraft',         'Constructor de megaproyectos y redstone engineer.'],
@@ -137,28 +179,29 @@ if ($userCount <= 1) {
         ['HardwareGuru',  'hardwareguru',  'hardware@nexus.gg', 'Counter-Strike',    'Enthusiast de periféricos y monitores gaming.'],
     ];
 
-    $insUser = $conn->prepare(
+    $insUser = $conn->prepare( // Inserción preparada reutilizable
         'INSERT INTO usuarios (nombre, username, email, password, favorite_game, bio, role)
          VALUES (?, ?, ?, ?, ?, ?, ?)'
     );
-    $demoPass = password_hash('Demo1234!', PASSWORD_BCRYPT, ['cost' => 10]);
-    $role     = 'member';
+    $demoPass = password_hash(DEMO_PASSWORD, PASSWORD_BCRYPT, ['cost' => 10]); // Misma contraseña demo para todos (desde config.php)
+    $role     = 'member'; // Todos los demos son miembros normales
 
-    foreach ($demoMembers as $m) {
-        $insUser->bind_param('sssssss', $m[0], $m[1], $m[2], $demoPass, $m[3], $m[4], $role);
-        $insUser->execute();
+    foreach ($demoMembers as $m) { // Recorre cada miembro ficticio
+        $insUser->bind_param('sssssss', $m[0], $m[1], $m[2], $demoPass, $m[3], $m[4], $role); // Enlaza sus campos
+        $insUser->execute(); // Lo inserta
     }
-    $insUser->close();
+    $insUser->close(); // Libera la sentencia
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SEED: Posts
+   SIEMBRA: posts de ejemplo
+   Cada fila es: [título, contenido, categoría, autor_id, likes, aprobado]
    ═══════════════════════════════════════════════════════════════ */
-$postCount = (int) $conn->query("SELECT COUNT(*) as c FROM posts")->fetch_assoc()['c'];
-$adminId   = (int) $conn->query("SELECT id FROM usuarios WHERE role='admin' LIMIT 1")->fetch_assoc()['id'];
+$postCount = (int) $conn->query("SELECT COUNT(*) as c FROM posts")->fetch_assoc()['c']; // Cuántos posts hay
+$adminId   = (int) $conn->query("SELECT id FROM usuarios WHERE role='admin' LIMIT 1")->fetch_assoc()['id']; // ID del admin (autor)
 
-if ($postCount === 0 && $adminId > 0) {
-    $seedPosts = [
+if ($postCount === 0 && $adminId > 0) { // Solo siembra si no hay posts y existe el admin
+    $seedPosts = [ // Lista de posts de ejemplo: [título, contenido, categoría, autor, likes, aprobado]
         ['Cómo entrenar aim sin quemarte en ranked',
          'Comparto una rutina simple de 30 minutos con bloques de flick, tracking y revisión rápida para mantener constancia sin saturarse. Practicad en Aim Lab o Kovaak 15 minutos cada mañana antes de jugar ranked. La clave está en la constancia: es mejor 20 minutos diarios que 2 horas los fines de semana.',
          'fps', $adminId, 24, 1],
@@ -220,23 +263,24 @@ if ($postCount === 0 && $adminId > 0) {
          'hardware', $adminId, 33, 1],
     ];
 
-    $insertPost = $conn->prepare(
+    $insertPost = $conn->prepare( // Inserción preparada reutilizable para los posts
         'INSERT INTO posts (title, content, category, author_id, likes, approved) VALUES (?, ?, ?, ?, ?, ?)'
     );
-    foreach ($seedPosts as $post) {
-        $insertPost->bind_param('sssiis', $post[0], $post[1], $post[2], $post[3], $post[4], $post[5]);
-        $insertPost->execute();
+    foreach ($seedPosts as $post) { // Recorre cada post de ejemplo
+        $insertPost->bind_param('sssiis', $post[0], $post[1], $post[2], $post[3], $post[4], $post[5]); // 3 cadenas, 2 enteros, 1 cadena
+        $insertPost->execute(); // Lo inserta
     }
-    $insertPost->close();
+    $insertPost->close(); // Libera la sentencia
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SEED: Demo contact messages (admin visibility test)
+   SIEMBRA: mensajes de contacto de ejemplo (para probar la vista del admin)
+   Cada fila es: [nombre, email, asunto, mensaje, leído]
    ═══════════════════════════════════════════════════════════════ */
-$contactCount = (int) $conn->query("SELECT COUNT(*) as c FROM contacts")->fetch_assoc()['c'];
+$contactCount = (int) $conn->query("SELECT COUNT(*) as c FROM contacts")->fetch_assoc()['c']; // Cuántos contactos hay
 
-if ($contactCount === 0) {
-    $demoContacts = [
+if ($contactCount === 0) { // Solo siembra si no hay ninguno
+    $demoContacts = [ // Lista de mensajes de ejemplo: [nombre, email, asunto, mensaje, leído]
         ['Carlos García',   'carlos@ejemplo.com',  'Error al registrarme',          'Intenté crear una cuenta con mi correo pero me dice que ya existe aunque nunca me registré.', 0],
         ['María López',     'maria@ejemplo.com',   'Sugerencia de categoría',       'Estaría genial añadir una categoría para juegos de rol y RPG. ¡Gran foro!', 0],
         ['Alejandro Torres','alex@ejemplo.com',    'Problema con el formulario',    'El formulario de publicación no me deja escribir más de 300 caracteres aunque dice que el máximo es 5000.', 0],
@@ -244,12 +288,12 @@ if ($contactCount === 0) {
         ['Diego Fernández', 'diego@ejemplo.com',   'Post eliminado sin razón',      'Mi post sobre builds de Elden Ring fue eliminado sin explicación. ¿Podéis revisar?', 0],
     ];
 
-    $insCon = $conn->prepare(
+    $insCon = $conn->prepare( // Inserción preparada reutilizable para los contactos
         "INSERT INTO contacts (name, email, subject, message, `read`) VALUES (?, ?, ?, ?, ?)"
     );
-    foreach ($demoContacts as $c) {
-        $insCon->bind_param('ssssi', $c[0], $c[1], $c[2], $c[3], $c[4]);
-        $insCon->execute();
+    foreach ($demoContacts as $c) { // Recorre cada mensaje de ejemplo
+        $insCon->bind_param('ssssi', $c[0], $c[1], $c[2], $c[3], $c[4]); // 4 cadenas y 1 entero (leído)
+        $insCon->execute(); // Lo inserta
     }
-    $insCon->close();
+    $insCon->close(); // Libera la sentencia
 }

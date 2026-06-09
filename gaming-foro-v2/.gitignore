@@ -1,0 +1,24 @@
+# ─── Configuración local con credenciales (NUNCA subir) ───
+config.php
+
+# ─── Backups generados por el panel de administración ───
+backups_encoding/
+nexus_web_completa_*.zip
+nexus_backup_completo_*.zip
+nexus_backup_*.sql
+nexus_database_*.sql
+*.zip
+
+# ─── Sistema operativo ───
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ─── Editores / IDE ───
+.vscode/
+.idea/
+*.swp
+*~
+
+# ─── Logs ───
+*.log
