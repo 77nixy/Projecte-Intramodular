@@ -1,158 +1,158 @@
 <?php
 /**
- * NEXUS//BOARD — Registration processor
- * Validates all fields, checks for duplicates, hashes the password,
- * and inserts the new user into the database.
+ * NEXUS — Procesador de registro
+ * Valida todos los campos, comprueba duplicados, cifra la contraseña
+ * e inserta el nuevo usuario en la base de datos.
  */
 
-session_start();
-require_once __DIR__ . '/db.php';
+session_start(); // Reanuda/crea la sesión
+require_once __DIR__ . '/db.php'; // Carga la conexión $conn a la BD
 
-/* ── Only accept POST ──────────────────────────────────────────── */
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: register.php');
-    exit;
+/* ── Solo se aceptan peticiones POST ───────────────────────────── */
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') { // Si no es POST (acceso directo)...
+    header('Location: register.php'); // ...vuelve al formulario de registro
+    exit; // Detiene la ejecución
 }
 
-/* ── CSRF: basic origin check ─────────────────────────────────── */
-$host    = $_SERVER['HTTP_HOST'] ?? '';
-$referer = $_SERVER['HTTP_REFERER'] ?? '';
-if ($referer && parse_url($referer, PHP_URL_HOST) !== $host) {
-    $_SESSION['flash_error'] = 'Solicitud no válida.';
-    header('Location: register.php');
-    exit;
+/* ── CSRF: comprobación básica de origen ─────────────────────── */
+$host    = $_SERVER['HTTP_HOST'] ?? '';    // Dominio actual
+$referer = $_SERVER['HTTP_REFERER'] ?? ''; // Página de origen del formulario
+if ($referer && parse_url($referer, PHP_URL_HOST) !== $host) { // Si viene de otro dominio...
+    $_SESSION['flash_error'] = 'Solicitud no válida.'; // ...se marca como sospechosa
+    header('Location: register.php'); // Vuelve al registro
+    exit; // Detiene la ejecución
 }
 
-/* ── Read raw inputs ──────────────────────────────────────────── */
-$nombre          = trim($_POST['name']            ?? '');
-$username        = trim($_POST['username']         ?? '');
-$email           = strtolower(trim($_POST['email'] ?? ''));
-$favoriteGame    = trim($_POST['favoriteGame']     ?? 'Otro');
-$password        = $_POST['password']              ?? '';
-$confirmPassword = $_POST['confirmPassword']       ?? '';
-$bio             = trim($_POST['bio']              ?? '');
-$termsAccepted   = isset($_POST['terms']);
+/* ── Lee los datos crudos del formulario ─────────────────────── */
+$nombre          = trim($_POST['name']            ?? '');          // Nombre visible
+$username        = trim($_POST['username']         ?? '');          // Nick público
+$email           = strtolower(trim($_POST['email'] ?? ''));         // Email en minúsculas
+$favoriteGame    = trim($_POST['favoriteGame']     ?? 'Otro');      // Juego favorito (por defecto 'Otro')
+$password        = $_POST['password']              ?? '';           // Contraseña
+$confirmPassword = $_POST['confirmPassword']       ?? '';           // Confirmación de la contraseña
+$bio             = trim($_POST['bio']              ?? '');          // Biografía opcional
+$termsAccepted   = isset($_POST['terms']);                          // ¿Marcó la casilla de normas?
 
-/* ── Terms of service ─────────────────────────────────────────── */
-if (!$termsAccepted) {
-    $_SESSION['flash_error'] = 'Debes aceptar las normas del foro para continuar.';
-    header('Location: register.php');
-    exit;
-}
-
-/* ── Required field presence ─────────────────────────────────── */
-if ($nombre === '' || $username === '' || $email === '' || $password === '') {
-    $_SESSION['flash_error'] = 'Por favor, completa todos los campos obligatorios.';
-    header('Location: register.php');
-    exit;
+/* ── Aceptación de las normas ─────────────────────────────────── */
+if (!$termsAccepted) { // Si no aceptó las normas...
+    $_SESSION['flash_error'] = 'Debes aceptar las normas del foro para continuar.'; // ...avisa
+    header('Location: register.php'); // Vuelve al registro
+    exit; // Detiene la ejecución
 }
 
-/* ── Length guards ────────────────────────────────────────────── */
-if (mb_strlen($nombre) < 2 || mb_strlen($nombre) > 24) {
-    $_SESSION['flash_error'] = 'El nombre visible debe tener entre 2 y 24 caracteres.';
-    header('Location: register.php');
-    exit;
-}
-if (mb_strlen($username) < 3 || mb_strlen($username) > 18) {
-    $_SESSION['flash_error'] = 'El nick debe tener entre 3 y 18 caracteres.';
-    header('Location: register.php');
-    exit;
-}
-if (mb_strlen($bio) > 180) {
-    $bio = mb_substr($bio, 0, 180);
+/* ── Comprueba que los campos obligatorios estén rellenos ────── */
+if ($nombre === '' || $username === '' || $email === '' || $password === '') { // Si falta alguno obligatorio...
+    $_SESSION['flash_error'] = 'Por favor, completa todos los campos obligatorios.'; // ...avisa
+    header('Location: register.php'); // Vuelve al registro
+    exit; // Detiene la ejecución
 }
 
-/* ── Username format: alphanumeric + underscore + hyphen ─────── */
-if (!preg_match('/^[a-zA-Z0-9_\-]{3,18}$/', $username)) {
-    $_SESSION['flash_error'] = 'El nick solo puede contener letras, números, guiones y guiones bajos.';
-    header('Location: register.php');
-    exit;
+/* ── Límites de longitud ──────────────────────────────────────── */
+if (mb_strlen($nombre) < 2 || mb_strlen($nombre) > 24) { // Nombre entre 2 y 24 caracteres
+    $_SESSION['flash_error'] = 'El nombre visible debe tener entre 2 y 24 caracteres.'; // Mensaje de error para el usuario
+    header('Location: register.php'); // Vuelve al formulario de registro
+    exit; // Detiene la ejecución
+}
+if (mb_strlen($username) < 3 || mb_strlen($username) > 18) { // Nick entre 3 y 18 caracteres
+    $_SESSION['flash_error'] = 'El nick debe tener entre 3 y 18 caracteres.'; // Mensaje de error para el usuario
+    header('Location: register.php'); // Vuelve al formulario de registro
+    exit; // Detiene la ejecución
+}
+if (mb_strlen($bio) > 180) { // Si la biografía supera 180 caracteres...
+    $bio = mb_substr($bio, 0, 180); // ...la recorta en vez de rechazarla
 }
 
-/* ── Email format ─────────────────────────────────────────────── */
-if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 150) {
-    $_SESSION['flash_error'] = 'El formato del correo electrónico no es válido.';
-    header('Location: register.php');
-    exit;
+/* ── Formato del nick: alfanumérico + guion bajo + guion ─────── */
+if (!preg_match('/^[a-zA-Z0-9_\-]{3,18}$/', $username)) { // Si contiene caracteres no permitidos...
+    $_SESSION['flash_error'] = 'El nick solo puede contener letras, números, guiones y guiones bajos.'; // Mensaje de error para el usuario
+    header('Location: register.php'); // Vuelve al formulario de registro
+    exit; // Detiene la ejecución
 }
 
-/* ── Password strength ────────────────────────────────────────── */
-if (strlen($password) < 6) {
-    $_SESSION['flash_error'] = 'La contraseña debe tener al menos 6 caracteres.';
-    header('Location: register.php');
-    exit;
-}
-if (strlen($password) > 256) {
-    $_SESSION['flash_error'] = 'La contraseña es demasiado larga.';
-    header('Location: register.php');
-    exit;
+/* ── Formato del email ────────────────────────────────────────── */
+if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 150) { // Email inválido o muy largo
+    $_SESSION['flash_error'] = 'El formato del correo electrónico no es válido.'; // Mensaje de error para el usuario
+    header('Location: register.php'); // Vuelve al formulario de registro
+    exit; // Detiene la ejecución
 }
 
-/* ── Password confirmation ────────────────────────────────────── */
-if (!hash_equals($password, $confirmPassword)) {
-    $_SESSION['flash_error'] = 'Las contraseñas no coinciden. Compruébalas de nuevo.';
-    header('Location: register.php');
-    exit;
+/* ── Robustez de la contraseña ────────────────────────────────── */
+if (strlen($password) < 6) { // Mínimo 6 caracteres
+    $_SESSION['flash_error'] = 'La contraseña debe tener al menos 6 caracteres.'; // Mensaje de error para el usuario
+    header('Location: register.php'); // Vuelve al formulario de registro
+    exit; // Detiene la ejecución
+}
+if (strlen($password) > 256) { // Máximo razonable para evitar abusos
+    $_SESSION['flash_error'] = 'La contraseña es demasiado larga.'; // Mensaje de error para el usuario
+    header('Location: register.php'); // Vuelve al formulario de registro
+    exit; // Detiene la ejecución
 }
 
-/* ── Sanitize nombre and bio ──────────────────────────────────── */
-$nombre = strip_tags($nombre);
-$bio    = strip_tags($bio);
+/* ── Confirmación de la contraseña ────────────────────────────── */
+if (!hash_equals($password, $confirmPassword)) { // Comparación segura: ambas deben coincidir
+    $_SESSION['flash_error'] = 'Las contraseñas no coinciden. Compruébalas de nuevo.'; // Mensaje de error para el usuario
+    header('Location: register.php'); // Vuelve al formulario de registro
+    exit; // Detiene la ejecución
+}
 
-/* ── Allowed favorite games whitelist ────────────────────────── */
-$allowedGames = [
+/* ── Sanea el nombre y la biografía ───────────────────────────── */
+$nombre = strip_tags($nombre); // Elimina etiquetas HTML del nombre
+$bio    = strip_tags($bio);    // Elimina etiquetas HTML de la biografía
+
+/* ── Lista blanca de juegos favoritos permitidos ─────────────── */
+$allowedGames = [ // Solo se aceptan estos valores
     'Valorant', 'Counter-Strike', 'League of Legends',
     'Fortnite', 'Apex Legends', 'Overwatch 2', 'Minecraft', 'Otro'
 ];
-if (!in_array($favoriteGame, $allowedGames, true)) {
-    $favoriteGame = 'Otro';
+if (!in_array($favoriteGame, $allowedGames, true)) { // Si el valor enviado no está en la lista...
+    $favoriteGame = 'Otro'; // ...se fuerza a 'Otro'
 }
 
-/* ── Check email / username uniqueness ───────────────────────── */
-$check = $conn->prepare(
-    'SELECT id, email, username FROM usuarios WHERE email = ? OR username = ? LIMIT 1'
+/* ── Comprueba que email y nick sean únicos ──────────────────── */
+$check = $conn->prepare( // Consulta preparada
+    'SELECT id, email, username FROM usuarios WHERE email = ? OR username = ? LIMIT 1' // Busca un usuario con ese email o nick
 );
-$check->bind_param('ss', $email, $username);
-$check->execute();
-$existing = $check->get_result()->fetch_assoc();
-$check->close();
+$check->bind_param('ss', $email, $username); // Enlaza email y username
+$check->execute(); // Ejecuta la búsqueda
+$existing = $check->get_result()->fetch_assoc(); // Fila existente (o null)
+$check->close(); // Libera la sentencia
 
-if ($existing) {
-    if (strtolower($existing['email']) === $email) {
-        $_SESSION['flash_error'] = 'Ese correo electrónico ya está registrado. ¿Olvidaste tu contraseña?';
-    } else {
-        $_SESSION['flash_error'] = 'Ese nick de usuario ya está en uso. Elige otro.';
+if ($existing) { // Si ya existe un usuario con ese email o nick...
+    if (strtolower($existing['email']) === $email) { // ...si coincide el email...
+        $_SESSION['flash_error'] = 'Ese correo electrónico ya está registrado. ¿Olvidaste tu contraseña?'; // avisa del email
+    } else { // ...si no, es el nick el que coincide
+        $_SESSION['flash_error'] = 'Ese nick de usuario ya está en uso. Elige otro.'; // avisa del nick
     }
-    header('Location: register.php');
-    exit;
+    header('Location: register.php'); // Vuelve al registro
+    exit; // Detiene la ejecución
 }
 
-/* ── Hash password and insert ─────────────────────────────────── */
-$passwordHash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
-$role         = 'member';
+/* ── Cifra la contraseña e inserta el usuario ────────────────── */
+$passwordHash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]); // Hash bcrypt con coste 12
+$role         = 'member'; // Todo registro nuevo es 'member' por defecto
 
-$insert = $conn->prepare(
+$insert = $conn->prepare( // Consulta preparada de inserción
     'INSERT INTO usuarios (nombre, username, email, password, favorite_game, bio, role)
-     VALUES (?, ?, ?, ?, ?, ?, ?)'
+     VALUES (?, ?, ?, ?, ?, ?, ?)' // Inserta el nuevo usuario con sus 7 campos
 );
-$insert->bind_param('sssssss', $nombre, $username, $email, $passwordHash, $favoriteGame, $bio, $role);
+$insert->bind_param('sssssss', $nombre, $username, $email, $passwordHash, $favoriteGame, $bio, $role); // 7 cadenas
 
-if (!$insert->execute()) {
-    $_SESSION['flash_error'] = 'Ocurrió un error al crear la cuenta. Inténtalo de nuevo.';
-    header('Location: register.php');
-    exit;
+if (!$insert->execute()) { // Si la inserción falla...
+    $_SESSION['flash_error'] = 'Ocurrió un error al crear la cuenta. Inténtalo de nuevo.'; // ...avisa
+    header('Location: register.php'); // Vuelve al formulario de registro
+    exit; // Detiene la ejecución
 }
 
-$newUserId = (int) $insert->insert_id;
-$insert->close();
+$newUserId = (int) $insert->insert_id; // ID autogenerado del nuevo usuario
+$insert->close(); // Libera la sentencia
 
-/* ── Auto-login after registration ───────────────────────────── */
-session_regenerate_id(true);
-$_SESSION['user_id']  = $newUserId;
-$_SESSION['role']     = $role;
-$_SESSION['username'] = $username;
-$_SESSION['nombre']   = $nombre;
+/* ── Inicia sesión automáticamente tras el registro ──────────── */
+session_regenerate_id(true);          // Nuevo ID de sesión (previene fijación de sesión)
+$_SESSION['user_id']  = $newUserId;   // Guarda el ID del nuevo usuario
+$_SESSION['role']     = $role;        // Guarda el rol ('member')
+$_SESSION['username'] = $username;    // Guarda el nick
+$_SESSION['nombre']   = $nombre;      // Guarda el nombre
 
-$_SESSION['flash_success'] = "¡Bienvenido a NEXUS//BOARD, {$nombre}! Tu cuenta ha sido creada correctamente.";
-header('Location: index.php');
-exit;
+$_SESSION['flash_success'] = "¡Bienvenido a NEXUS, {$nombre}! Tu cuenta ha sido creada correctamente."; // Mensaje de bienvenida
+header('Location: index.php'); // Redirige a la portada
+exit; // Detiene la ejecución
